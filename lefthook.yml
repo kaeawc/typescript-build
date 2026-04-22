@@ -1,0 +1,51 @@
+# Lefthook configuration.
+# Docs: https://lefthook.dev/configuration/
+#
+# Install hooks once per clone:
+#   bun run hooks:install
+# Skip a single run:
+#   LEFTHOOK=0 git commit ...
+#
+# CI is auto-skipped via the `skip: ci` marker on each job.
+
+pre-commit:
+  parallel: true
+  jobs:
+    - name: eslint
+      glob: "*.{ts,mts,cts,mjs,cjs,js}"
+      run: bunx eslint --fix {staged_files}
+      stage_fixed: true
+      skip:
+        - ref: ci
+
+    - name: shellcheck
+      glob: "*.sh"
+      run: shellcheck {staged_files}
+      skip:
+        - ref: ci
+
+    - name: hadolint
+      glob: "**/Dockerfile*"
+      run: hadolint {staged_files}
+      skip:
+        - ref: ci
+
+    - name: dependabot
+      glob: ".github/dependabot.yml"
+      run: bash scripts/validate_dependabot.sh
+      skip:
+        - ref: ci
+
+commit-msg:
+  jobs:
+    - name: commitlint
+      run: bunx commitlint --edit {1}
+      skip:
+        - ref: ci
+
+pre-push:
+  jobs:
+    - name: turbo-validate
+      run: bun run turbo:validate
+      skip:
+        - ref: ci

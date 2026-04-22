@@ -1,0 +1,90 @@
+{
+  "name": "typescript-build",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Bun + Turbo + TypeScript template with the validation and guardrails from auto-mobile",
+  "scripts": {
+    "test": "bun test",
+    "test:coverage": "bun test --coverage",
+    "test:timing": "bun scripts/check-test-timing.ts",
+    "typecheck": "tsc -p tsconfig.typecheck.json",
+    "types:emit": "tsc -p tsconfig.declarations.json && bun scripts/patch-declaration-imports.ts",
+    "lint": "eslint . --fix",
+    "lint:types": "eslint -c eslint.typechecked.config.mjs .",
+    "watch": "bun --watch src/index.ts",
+    "build": "bun build.ts && bun run types:emit && chmod +x dist/src/index.js",
+    "clean": "rm -rf dist",
+    "benchmark-npm-unpacked-size": "bun scripts/benchmark-npm-unpacked-size.ts",
+    "benchmark-cli-startup": "bun scripts/benchmark-cli-startup.ts",
+    "benchmark:perf": "bun scripts/benchmark-performance.ts",
+    "coverage:check": "bun scripts/check-coverage-thresholds.ts",
+    "package:quality": "bash scripts/validate-package-quality.sh",
+    "scaffold:utility": "bun scripts/scaffold-utility.ts",
+    "docs:architecture": "bun scripts/generate-architecture-map.ts",
+    "validate:architecture": "bun scripts/generate-architecture-map.ts --check",
+    "validate:template": "bun scripts/validate-template-health.ts",
+    "prepublishOnly": "true",
+    "postpublish": "true",
+    "dead-code:ts": "bash scripts/detect-dead-code-ts.sh",
+    "dead-code:ts:prune": "bash -o pipefail -c 'bunx ts-prune --project tsconfig.dead-code.json | (grep -v \"(used in module)\" || true) | bash scripts/filter-ts-prune-allowlist.sh'",
+    "dead-code:ts:knip": "bunx knip",
+    "validate:fast": "bash scripts/all_fast_validate_checks.sh",
+    "hooks:install": "bunx lefthook install",
+    "hooks:uninstall": "bunx lefthook uninstall",
+    "turbo:validate": "turbo run lint lint:types typecheck build test validate:template coverage:check package:quality benchmark:perf",
+    "turbo:build": "turbo run build",
+    "turbo:lint": "turbo run lint",
+    "turbo:lint:types": "turbo run lint:types",
+    "turbo:typecheck": "turbo run typecheck",
+    "turbo:test": "turbo run test",
+    "turbo:benchmark:perf": "turbo run benchmark:perf"
+  },
+  "packageManager": "bun@1.3.13",
+  "engines": {
+    "bun": ">=1.3.13"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/src/index.js",
+  "type": "module",
+  "types": "./dist/src/index.d.ts",
+  "bin": {
+    "typescript-build": "./dist/src/index.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js",
+      "default": "./dist/src/index.js"
+    }
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.2",
+    "@commitlint/cli": "^20.5.0",
+    "@commitlint/config-conventional": "^20.5.0",
+    "@stylistic/eslint-plugin": "^5.7.0",
+    "@types/bun": "^1.3.12",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^25.0.9",
+    "@typescript-eslint/eslint-plugin": "^8.53.0",
+    "@typescript-eslint/parser": "^8.53.0",
+    "eslint": "^10.0.0",
+    "eslint-plugin-boundaries": "^6.0.2",
+    "eslint-plugin-import": "^2.31.0",
+    "fast-check": "^4.6.0",
+    "knip": "^6.0.0",
+    "lefthook": "^2.1.5",
+    "publint": "^0.3.18",
+    "ts-prune": "^0.10.3",
+    "turbo": "^2.8.10",
+    "typescript": "^6.0.2"
+  },
+  "dependencies": {
+    "ajv": "^8.18.0",
+    "ajv-formats": "^3.0.1",
+    "hono": "^4.12.12",
+    "js-yaml": "^4.1.1"
+  }
+}

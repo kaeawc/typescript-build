@@ -1,0 +1,15 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`CLI help text (snapshot) --help output is stable 1`] = `
+"Usage: typescript-build <command> [options]
+
+Commands:
+  greet <name>        Print a greeting for <name>
+  version             Print the package version
+  serve [--port N]    Start the HTTP server (default port 8080)
+  help                Show this message
+
+Options:
+  --help, -h          Show this message
+"
+`;

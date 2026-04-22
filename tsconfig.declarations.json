@@ -1,0 +1,23 @@
+{
+  "extends": "./tsconfig.typecheck.json",
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "noEmit": false,
+    "outDir": "./dist",
+    "rootDir": ".",
+    "stripInternal": true
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "coverage",
+    "scratch",
+    "test",
+    "scripts",
+    "examples"
+  ]
+}
