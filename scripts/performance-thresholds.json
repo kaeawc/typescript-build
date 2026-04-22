@@ -1,0 +1,21 @@
+{
+  "version": "1",
+  "benchmarks": {
+    "ttl-cache-set-get": {
+      "iterations": 100000,
+      "budgetMs": 350
+    },
+    "json-schema-validate": {
+      "iterations": 25000,
+      "budgetMs": 550
+    },
+    "message-router-dispatch": {
+      "iterations": 25000,
+      "budgetMs": 650
+    },
+    "cold-cli-import": {
+      "iterations": 15,
+      "budgetMs": 900
+    }
+  }
+}

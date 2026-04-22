@@ -1,0 +1,21 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "entry": [
+    "src/index.ts",
+    "test/**/*.ts",
+    "scripts/**/*.ts"
+  ],
+  "project": [
+    "src/**/*.ts",
+    "test/**/*.ts",
+    "scripts/**/*.ts"
+  ],
+  "ignore": [],
+  "ignoreDependencies": ["ts-prune"],
+  "ignoreBinaries": [],
+  "ignoreExportsUsedInFile": true,
+  "includeEntryExports": true,
+  "typescript": {
+    "config": "tsconfig.dead-code.json"
+  }
+}

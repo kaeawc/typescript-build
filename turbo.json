@@ -1,0 +1,164 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "ui": "stream",
+  "envMode": "strict",
+  "globalDependencies": ["tsconfig.json"],
+  "tasks": {
+    "typecheck": {
+      "description": "Run full TypeScript semantic checks across source, tests, scripts, and examples",
+      "inputs": [
+        "src/**",
+        "test/**",
+        "scripts/**/*.ts",
+        "examples/**/*.ts",
+        "build.ts",
+        "tsconfig.json",
+        "tsconfig.typecheck.json",
+        "package.json"
+      ],
+      "outputs": [],
+      "outputLogs": "new-only",
+      "passThroughEnv": ["CI", "GITHUB_ACTIONS"]
+    },
+    "build": {
+      "description": "Compile TypeScript source to dist/",
+      "outputs": ["dist/**"],
+      "inputs": [
+        "src/**",
+        "build.ts",
+        "scripts/patch-declaration-imports.ts",
+        "package.json",
+        "tsconfig.json",
+        "tsconfig.declarations.json",
+        "tsconfig.typecheck.json"
+      ],
+      "outputLogs": "new-only",
+      "passThroughEnv": ["CI", "GITHUB_ACTIONS"]
+    },
+    "lint": {
+      "description": "Run ESLint with auto-fix on source and test files",
+      "inputs": [
+        "src/**",
+        "test/**",
+        "scripts/**/*.ts",
+        "eslint.config.mjs"
+      ],
+      "outputs": [],
+      "outputLogs": "new-only",
+      "passThroughEnv": ["CI", "GITHUB_ACTIONS"]
+    },
+    "lint:types": {
+      "description": "Run type-aware ESLint rules",
+      "inputs": [
+        "src/**",
+        "test/**",
+        "scripts/**/*.ts",
+        "examples/**/*.ts",
+        "build.ts",
+        "eslint.config.mjs",
+        "eslint.typechecked.config.mjs",
+        "tsconfig.json",
+        "tsconfig.typecheck.json"
+      ],
+      "outputs": [],
+      "outputLogs": "new-only",
+      "passThroughEnv": ["CI", "GITHUB_ACTIONS"]
+    },
+    "test": {
+      "description": "Run Bun test suite",
+      "inputs": [
+        "src/**",
+        "test/**",
+        "scripts/**",
+        "package.json",
+        "bunfig.toml"
+      ],
+      "outputs": [],
+      "outputLogs": "new-only",
+      "passThroughEnv": ["CI", "GITHUB_ACTIONS"]
+    },
+    "test:coverage": {
+      "description": "Run tests with coverage reporting to coverage/",
+      "inputs": [
+        "src/**",
+        "test/**",
+        "scripts/**",
+        "package.json",
+        "bunfig.toml"
+      ],
+      "outputs": ["coverage/**"],
+      "outputLogs": "new-only",
+      "passThroughEnv": ["CI", "GITHUB_ACTIONS"]
+    },
+    "coverage:check": {
+      "description": "Validate coverage output against local thresholds",
+      "inputs": [
+        "src/**",
+        "test/**",
+        "scripts/check-coverage-thresholds.ts",
+        "coverage-thresholds.json",
+        "bunfig.toml"
+      ],
+      "outputs": ["coverage/**"],
+      "outputLogs": "new-only",
+      "passThroughEnv": ["CI", "GITHUB_ACTIONS"]
+    },
+    "package:quality": {
+      "description": "Validate publish artifact shape, package exports, and type packaging",
+      "dependsOn": ["build"],
+      "inputs": [
+        "src/**",
+        "build.ts",
+        "scripts/patch-declaration-imports.ts",
+        "scripts/validate-package-quality.sh",
+        "package.json",
+        "tsconfig.declarations.json",
+        "tsconfig.typecheck.json"
+      ],
+      "outputs": [],
+      "outputLogs": "new-only",
+      "passThroughEnv": ["CI", "GITHUB_ACTIONS"]
+    },
+    "validate:architecture": {
+      "description": "Regenerate and verify the agent architecture map is current",
+      "inputs": [
+        "src/**",
+        "test/contracts/**",
+        "test/fakes/**",
+        "scripts/generate-architecture-map.ts",
+        "docs/architecture-map.md"
+      ],
+      "outputs": [],
+      "outputLogs": "new-only",
+      "passThroughEnv": ["CI", "GITHUB_ACTIONS"]
+    },
+    "validate:template": {
+      "description": "Run repository-level template health checks",
+      "inputs": [
+        "src/**",
+        "test/**",
+        "scripts/**",
+        ".github/actions/setup-bun-turbo/action.yml",
+        "README.md",
+        "AGENTS.md",
+        "package.json",
+        "turbo.json"
+      ],
+      "outputs": [],
+      "outputLogs": "new-only",
+      "passThroughEnv": ["CI", "GITHUB_ACTIONS"]
+    },
+    "benchmark:perf": {
+      "description": "Run local performance budgets for representative hot paths",
+      "inputs": [
+        "src/**",
+        "scripts/benchmark-performance.ts",
+        "scripts/performance-thresholds.json",
+        "package.json"
+      ],
+      "outputs": [],
+      "outputLogs": "new-only",
+      "passThroughEnv": ["CI", "GITHUB_ACTIONS"]
+    }
+  }
+}

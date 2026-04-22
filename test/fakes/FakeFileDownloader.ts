@@ -1,0 +1,28 @@
+import * as fs from "fs/promises";
+import * as os from "os";
+import * as path from "path";
+import type { FileDownloader } from "../../src/utils/FileDownloader";
+
+/**
+ * Fake FileDownloader that writes a configurable payload to a temp file
+ * instead of hitting the network. Records every URL/destination pair it was called with.
+ */
+export class FakeFileDownloader implements FileDownloader {
+  public downloadedUrls: string[] = [];
+  public downloadedDestinations: string[] = [];
+  public payload: Buffer = Buffer.from("a".repeat(12000));
+  public shouldThrow: Error | null = null;
+  public lastWrittenPath: string | null = null;
+
+  public async download(url: string, destination: string): Promise<void> {
+    if (this.shouldThrow) {
+      throw this.shouldThrow;
+    }
+    this.downloadedUrls.push(url);
+    this.downloadedDestinations.push(destination);
+    const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "fake-dl-"));
+    const tempFile = path.join(tempDir, "downloaded-file");
+    await fs.writeFile(tempFile, this.payload);
+    this.lastWrittenPath = tempFile;
+  }
+}

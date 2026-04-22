@@ -1,0 +1,67 @@
+name: "Dead Code Detection"
+
+on:
+  schedule:
+    # Monday 00:00 UTC
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+    inputs:
+      threshold:
+        description: 'Maximum allowed dead code issues (default: 10)'
+        required: false
+        default: '10'
+
+permissions:
+  contents: read
+  issues: write
+  actions: read
+
+jobs:
+  detect-dead-code:
+    name: "Detect TypeScript Dead Code"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Git Checkout"
+        uses: actions/checkout@v6
+        with:
+          lfs: false
+
+      - name: "Install jq"
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
+      - uses: ./.github/actions/setup-bun-turbo
+
+      - name: "Run Dead Code Detection"
+        run: |
+          mkdir -p reports
+          THRESHOLD=${{ github.event.inputs.threshold || '10' }}
+          bash scripts/detect-dead-code-ts.sh --output-dir=reports --threshold="$THRESHOLD" || echo "FAILED=true" >> "$GITHUB_ENV"
+          exit 0
+
+      - name: "Upload Dead Code Report (JSON)"
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dead-code-report-json
+          path: reports/dead-code-report.json
+          retention-days: 90
+
+      - name: "Upload Dead Code Report (Markdown)"
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dead-code-report-markdown
+          path: reports/dead-code-report.md
+          retention-days: 90
+
+      - name: "Check Detection Result"
+        if: always()
+        run: |
+          if [ "$FAILED" = "true" ]; then
+            echo "::error::Dead code detection failed - threshold exceeded"
+            cat reports/dead-code-report.json || true
+            exit 1
+          fi
+          echo "::notice::Dead code detection passed - below threshold"

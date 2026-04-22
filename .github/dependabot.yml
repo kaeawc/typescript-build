@@ -1,0 +1,44 @@
+# Dependabot configuration.
+# Docs: https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+version: 2
+updates:
+  - package-ecosystem: "bun"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "13:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    versioning-strategy: "increase-if-necessary"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps)"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "13:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "ci"
+    commit-message:
+      prefix: "chore(ci)"
+
+  - package-ecosystem: "docker"
+    directory: "/ci"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "13:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "docker"
+    commit-message:
+      prefix: "chore(docker)"

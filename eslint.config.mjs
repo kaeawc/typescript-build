@@ -1,0 +1,287 @@
+import typescriptEslint from "@typescript-eslint/eslint-plugin";
+import tsParser from "@typescript-eslint/parser";
+import stylistic from "@stylistic/eslint-plugin";
+import importRules from "eslint-plugin-import";
+import boundaries from "eslint-plugin-boundaries";
+
+const plugins = {
+	"@stylistic": stylistic,
+	"@typescript-eslint": typescriptEslint,
+	import: importRules,
+	boundaries,
+};
+
+export const baseRules = {
+	"@typescript-eslint/no-unused-vars": [
+		2,
+		{args: "none", caughtErrors: "none"},
+	],
+
+	"@typescript-eslint/naming-convention": [
+		2,
+		// Interfaces: PascalCase, no "I" prefix, no "Interface" suffix
+		{
+			selector: "interface",
+			format: ["PascalCase"],
+			custom: {
+				regex: "^I[A-Z]|Interface$",
+				match: false,
+			},
+		},
+		// Classes: PascalCase, no "Impl" suffix
+		{
+			selector: "class",
+			format: ["PascalCase"],
+			custom: {
+				regex: "Impl$",
+				match: false,
+			},
+		},
+	],
+
+	/**
+	 * Enforced rules
+	 */
+	// syntax preferences
+	"object-curly-spacing": ["error", "always"],
+	quotes: [
+		2,
+		"double",
+		{
+			avoidEscape: true,
+			allowTemplateLiterals: true,
+		},
+	],
+	"jsx-quotes": [2, "prefer-single"],
+	"no-extra-semi": 2,
+	"@stylistic/semi": [2],
+	"comma-style": [2, "last"],
+	"wrap-iife": [2, "inside"],
+	"spaced-comment": [
+		2,
+		"always",
+		{
+			markers: ["*"],
+		},
+	],
+	eqeqeq: [2],
+	"accessor-pairs": [
+		2,
+		{
+			getWithoutSet: false,
+			setWithoutGet: false,
+		},
+	],
+	"brace-style": [2, "1tbs", {allowSingleLine: true}],
+	curly: [2, "all"],
+	"new-parens": 2,
+	"arrow-parens": [2, "as-needed"],
+	"prefer-const": 2,
+	"quote-props": [2, "consistent"],
+	"nonblock-statement-body-position": [2, "below"],
+
+	// anti-patterns
+	"no-var": 2,
+	"no-with": 2,
+	"no-multi-str": 2,
+	"no-caller": 2,
+	"no-implied-eval": 2,
+	"no-labels": 2,
+	"no-new-object": 2,
+	"no-octal-escape": 2,
+	"no-self-compare": 2,
+	"no-shadow-restricted-names": 2,
+	"no-cond-assign": 2,
+	"no-debugger": 2,
+	"no-dupe-keys": 2,
+	"no-duplicate-case": 2,
+	"no-empty-character-class": 2,
+	"no-unreachable": 2,
+	"no-unsafe-negation": 2,
+	radix: 2,
+	"valid-typeof": 2,
+	"no-implicit-globals": [2],
+	"no-unused-expressions": [
+		2,
+		{allowShortCircuit: true, allowTernary: true, allowTaggedTemplates: true},
+	],
+	"no-proto": 2,
+
+	// es2015 features
+	"require-yield": 2,
+	"template-curly-spacing": [2, "never"],
+
+	// spacing details
+	"space-infix-ops": 2,
+	"space-in-parens": [2, "never"],
+	"array-bracket-spacing": [2, "never"],
+	"comma-spacing": [2, {before: false, after: true}],
+	"keyword-spacing": [
+		2,
+		{
+			overrides: {
+				if: {after: true},
+				else: {after: true},
+				for: {after: true},
+				while: {after: true},
+				do: {after: true},
+				switch: {after: true},
+				return: {after: true},
+			},
+		},
+	],
+  "space-before-function-paren": [
+    2,
+    {
+      anonymous: "never",
+      named: "never",
+      asyncArrow: "always",
+    },
+  ],
+  "no-whitespace-before-property": 2,
+	"arrow-spacing": [
+		2,
+		{
+			after: true,
+			before: true,
+		},
+	],
+	"@stylistic/function-call-spacing": 2,
+	"@stylistic/type-annotation-spacing": 2,
+
+	// import + API rules
+	// - Prevent .js/.ts extensions in relative imports (breaks bun test).
+	// - Ban raw setTimeout/setInterval: use the Timer interface instead so tests
+	//   can inject FakeTimer and avoid flakiness.
+	"no-restricted-syntax": [
+		2,
+		{
+			selector: "ImportDeclaration[source.value=/^\\..*\\.js$/]",
+			message: "Do not use .js extension in relative imports. Use extensionless imports instead (e.g., './foo' not './foo.js'). This causes MODULE_NOT_FOUND errors in tests.",
+		},
+		{
+			selector: "ImportDeclaration[source.value=/^\\..*\\.ts$/]",
+			message: "Do not use .ts extension in relative imports. Use extensionless imports instead (e.g., './foo' not './foo.ts').",
+		},
+		{
+			selector: "CallExpression[callee.name='setTimeout']",
+			message: "Use Timer.setTimeout() instead. Import { Timer, defaultTimer } from 'src/utils/SystemTimer' so tests can inject FakeTimer.",
+		},
+		{
+			selector: "CallExpression[callee.name='setInterval']",
+			message: "Use Timer.setInterval() instead. Import { Timer, defaultTimer } from 'src/utils/SystemTimer' so tests can inject FakeTimer.",
+		},
+	],
+
+	// file whitespace
+	"no-multiple-empty-lines": [2, {max: 2, maxEOF: 0}],
+	"no-mixed-spaces-and-tabs": 2,
+	"no-trailing-spaces": 2,
+	"linebreak-style": [process.platform === "win32" ? 0 : 2, "unix"],
+	indent: [
+		2,
+		2,
+		{SwitchCase: 1, CallExpression: {arguments: "first"}, MemberExpression: 1},
+	],
+	"key-spacing": [
+		2,
+		{
+			beforeColon: false,
+		},
+	],
+	"eol-last": 2,
+};
+
+const languageOptions = {
+	parser: tsParser,
+	ecmaVersion: 9,
+	sourceType: "module",
+};
+
+// Using `boundaries/element-types` (legacy in v6 but the object-based v6 API
+// for `boundaries/dependencies` is still stabilizing). The functional guarantee
+// is the same: utils/config/logger are leaf layers and cannot depend on higher
+// layers. Migrate to the newer rule name when the plugin's v6 API settles.
+const boundaryRules = {
+	"boundaries/element-types": [
+		2,
+		{
+			default: "allow",
+			rules: [
+				{ from: "utils",       disallow: ["server", "cli", "composition", "examples"] },
+				{ from: "server",      disallow: ["cli", "composition", "examples"] },
+				{ from: "config",      disallow: ["server", "cli", "composition", "examples", "utils"] },
+				{ from: "logger",      disallow: ["server", "cli", "composition", "examples", "utils"] },
+				{ from: "fakes",       disallow: ["examples"] },
+			],
+		},
+	],
+};
+
+const boundariesSettings = {
+	"boundaries/elements": [
+		{ type: "utils",       pattern: "src/utils/**/*" },
+		{ type: "server",      pattern: "src/server/**/*" },
+		{ type: "cli",         pattern: "src/cli.ts" },
+		{ type: "composition", pattern: "src/composition.ts" },
+		{ type: "config",      pattern: "src/config.ts" },
+		{ type: "logger",      pattern: "src/logger.ts" },
+		{ type: "entry",       pattern: "src/index.ts" },
+		{ type: "fakes",       pattern: "test/fakes/**/*" },
+		{ type: "fixtures",    pattern: "test/fixtures/**/*" },
+		{ type: "contracts",   pattern: "test/contracts/**/*" },
+		{ type: "tests",       pattern: "test/**/*.test.ts" },
+		{ type: "examples",    pattern: "examples/**/*" },
+	],
+};
+
+export default [
+	{
+    ignores: ["dist/**/*", "node_modules/**/*", "coverage/**/*"],
+  },
+  {
+		files: ["**/*.ts"],
+		plugins,
+		languageOptions,
+		settings: boundariesSettings,
+		rules: { ...baseRules, ...boundaryRules },
+	},
+	{
+        files: ["test/**/*.ts"],
+		plugins,
+		languageOptions,
+		rules: {
+			...baseRules,
+			"no-unused-expressions": "off",
+		},
+	},
+	{
+		files: ["**/*.generated.ts", "**/generated/**/*.ts", "**/*.d.ts"],
+		plugins,
+		languageOptions,
+		rules: {
+			...baseRules,
+			"no-mixed-spaces-and-tabs": "off",
+		},
+	},
+	{
+		// SystemTimer and FakeTimer wrap the raw global timer functions.
+		files: ["**/SystemTimer.ts", "**/FakeTimer.ts"],
+		plugins,
+		languageOptions,
+		rules: {
+			...baseRules,
+			"no-restricted-syntax": [
+				2,
+				{
+					selector: "ImportDeclaration[source.value=/^\\..*\\.js$/]",
+					message: "Do not use .js extension in relative imports.",
+				},
+				{
+					selector: "ImportDeclaration[source.value=/^\\..*\\.ts$/]",
+					message: "Do not use .ts extension in relative imports.",
+				},
+			],
+		},
+	},
+];

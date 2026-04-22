@@ -1,0 +1,159 @@
+import fs from "node:fs";
+import { promises as fsPromises } from "node:fs";
+
+export async function pathExists(filePath: string): Promise<boolean> {
+  try {
+    await fsPromises.access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Interface for file system operations
+ */
+export interface FileSystem {
+  /**
+   * Read file contents asynchronously as a string
+   * @param filePath - Path to the file to read
+   * @param encoding - File encoding (default: "utf8")
+   * @returns Promise resolving to file contents
+   */
+  readFile(filePath: string, encoding?: BufferEncoding): Promise<string>;
+
+  /**
+   * Read file contents asynchronously as a Buffer
+   * @param filePath - Path to the file to read
+   * @returns Promise resolving to file contents as Buffer
+   */
+  readFileBuffer(filePath: string): Promise<Buffer>;
+
+  /**
+   * Read directory contents asynchronously
+   * @param dirPath - Path to the directory to read
+   * @returns Promise resolving to array of file names
+   */
+  readdir(dirPath: string): Promise<string[]>;
+
+  /**
+   * Check if a file or directory exists synchronously
+   * @param filePath - Path to check
+   * @returns true if the file/directory exists
+   */
+  existsSync(filePath: string): boolean;
+
+  /**
+   * Check if a file or directory exists asynchronously
+   * @param filePath - Path to check
+   * @returns Promise resolving to true if the file/directory exists
+   */
+  pathExists(filePath: string): Promise<boolean>;
+
+  /**
+   * Get file stats
+   * @param filePath - Path to the file
+   * @returns Promise resolving to file stats
+   */
+  stat(filePath: string): Promise<{ size: number; mtimeMs: number }>;
+
+  /**
+   * Write string content to a file asynchronously
+   * @param filePath - Path to the file to write
+   * @param content - Content to write
+   * @param encoding - File encoding (default: "utf8")
+   * @returns Promise that resolves when write is complete
+   */
+  writeFile(filePath: string, content: string, encoding?: BufferEncoding): Promise<void>;
+
+  /**
+   * Write binary content to a file asynchronously
+   * @param filePath - Path to the file to write
+   * @param data - Buffer to write
+   * @returns Promise that resolves when write is complete
+   */
+  writeFileBuffer(filePath: string, data: Buffer): Promise<void>;
+
+  /**
+   * Ensure a directory exists, creating it if necessary
+   * @param dirPath - Path to the directory
+   * @returns Promise that resolves when directory is ensured
+   */
+  ensureDir(dirPath: string): Promise<void>;
+
+  /**
+   * Delete a file
+   * @param filePath - Path to the file to delete
+   * @returns Promise that resolves when the file is deleted
+   */
+  unlink(filePath: string): Promise<void>;
+
+  /**
+   * Remove a file or directory recursively
+   * @param filePath - Path to remove
+   * @returns Promise that resolves when removed
+   */
+  remove(filePath: string): Promise<void>;
+
+  /**
+   * Rename/move a file or directory
+   * @param oldPath - Current path
+   * @param newPath - New path
+   * @returns Promise that resolves when renamed
+   */
+  rename(oldPath: string, newPath: string): Promise<void>;
+}
+
+/**
+ * Default file system implementation
+ */
+export class DefaultFileSystem implements FileSystem {
+  async readFile(filePath: string, encoding: BufferEncoding = "utf8"): Promise<string> {
+    return fsPromises.readFile(filePath, { encoding });
+  }
+
+  async readFileBuffer(filePath: string): Promise<Buffer> {
+    return fsPromises.readFile(filePath);
+  }
+
+  async readdir(dirPath: string): Promise<string[]> {
+    return fsPromises.readdir(dirPath);
+  }
+
+  existsSync(filePath: string): boolean {
+    return fs.existsSync(filePath);
+  }
+
+  async pathExists(filePath: string): Promise<boolean> {
+    return pathExists(filePath);
+  }
+
+  async stat(filePath: string): Promise<{ size: number; mtimeMs: number }> {
+    const stats = await fsPromises.stat(filePath);
+    return { size: stats.size, mtimeMs: stats.mtimeMs };
+  }
+
+  async writeFile(filePath: string, content: string, encoding: BufferEncoding = "utf8"): Promise<void> {
+    await fsPromises.writeFile(filePath, content, { encoding });
+  }
+
+  async writeFileBuffer(filePath: string, data: Buffer): Promise<void> {
+    await fs.promises.writeFile(filePath, data, { mode: 0o600 });
+  }
+
+  async ensureDir(dirPath: string): Promise<void> {
+    await fsPromises.mkdir(dirPath, { recursive: true });
+  }
+
+  async unlink(filePath: string): Promise<void> {
+    await fsPromises.unlink(filePath);
+  }
+
+  async remove(filePath: string): Promise<void> {
+    await fsPromises.rm(filePath, { recursive: true, force: true });
+  }
+
+  async rename(oldPath: string, newPath: string): Promise<void> {
+    await fsPromises.rename(oldPath, newPath);
+  }
+}

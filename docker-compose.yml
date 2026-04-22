@@ -1,0 +1,6 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ci/Dockerfile
+    image: typescript-build:local

@@ -1,0 +1,37 @@
+{
+  "ignorePaths": [
+    "src/index.ts",
+    "src/cli.ts",
+    "src/composition.ts",
+    "src/utils/crypto.ts",
+    "src/utils/cache/Cache.ts",
+    "src/utils/filesystem/DefaultFileSystem.ts",
+    "src/utils/FileDownloader.ts",
+    "src/utils/HttpClient.ts",
+    "src/utils/JsonSchemaValidator.ts",
+    "src/utils/YamlSerializer.ts",
+    "src/utils/retry/RetryExecutor.ts",
+    "src/utils/socket/SocketClient.ts",
+    "src/utils/RetryingHttpClient.ts",
+    "src/utils/websocket/MessageRouter.ts",
+    "src/utils/websocket/WebSocketClient.ts",
+    "src/utils/websocket/WebSocketServer.ts",
+    "src/utils/Random.ts",
+    "src/utils/Clock.ts",
+    "src/utils/EnvReader.ts",
+    "src/utils/KvStore.ts",
+    "src/utils/Tracer.ts",
+    "src/utils/Result.ts",
+    "src/utils/TaggedError.ts",
+    "src/utils/Brand.ts",
+    "src/utils/ShutdownCoordinator.ts",
+    "src/utils/installErrorHandlers.ts",
+    "test/fakes/FakeWebSocketPair.ts"
+  ],
+  "ignorePathPatterns": [
+    "^test/contracts/",
+    "^test/fixtures/",
+    "^examples/"
+  ],
+  "ignoreEntries": []
+}
