@@ -19,7 +19,7 @@ interface PackageJson {
   [key: string]: unknown;
 }
 
-export const usage = `Usage: bun run init:template -- --name my-app [--bin my-app] [--description "My app"] [--dry-run]
+const usage = `Usage: bun run init:template -- --name my-app [--bin my-app] [--description "My app"] [--dry-run]
 
 Options:
   --name <name>           New npm package name. Scoped names are allowed.
@@ -160,7 +160,7 @@ const writeIfChanged = (path: string, current: string, next: string, dryRun: boo
   return true;
 };
 
-export const runTemplateInit = (options: TemplateInitOptions): string[] => {
+const runTemplateInit = (options: TemplateInitOptions): string[] => {
   const packagePath = "package.json";
   const readmePath = "README.md";
   const agentsPath = "AGENTS.md";
