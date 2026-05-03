@@ -44,6 +44,7 @@ dead-code-allowlist.json  allowlist consumed by detect-dead-code-ts.sh
 | `bun run package:quality`           | Validate package exports/types with publint + ATTW           |
 | `bun run benchmark:perf`            | Run local performance budgets for hot utility paths          |
 | `bun run turbo:benchmark:perf`      | Cached performance-budget run                               |
+| `bun run init:template -- --name my-app` | Rename package/bin and top-level docs after forking    |
 | `bun run docs:architecture`         | Regenerate `docs/architecture-map.md` for agent context      |
 | `bun run validate:template`         | Check template-level invariants and stale architecture docs  |
 | `bun run scaffold:utility -- --name FooClient` | Scaffold an interface/fake/contract/test utility |

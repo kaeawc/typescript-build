@@ -30,13 +30,15 @@ bun run lint:types
 bun run docs:architecture
 bun run validate:architecture
 bun run validate:template
+bun run init:template -- --name my-app --description "My app"
 bun run scaffold:utility -- --name FooClient
 ```
 
 `docs:architecture` regenerates `docs/architecture-map.md`, a compact source /
 test / fake / contract index for agents. `validate:template` verifies toolchain
 version alignment, required package scripts, extensionless imports, and that the
-architecture map is current.
+architecture map is current. `init:template` renames the package, binary entry,
+and top-level README/AGENTS intro after a fork.
 
 ## Coverage and package quality
 

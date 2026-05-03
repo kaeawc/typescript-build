@@ -20,6 +20,7 @@
     "coverage:check": "bun scripts/check-coverage-thresholds.ts",
     "package:quality": "bash scripts/validate-package-quality.sh",
     "scaffold:utility": "bun scripts/scaffold-utility.ts",
+    "init:template": "bun scripts/init-template.ts",
     "docs:architecture": "bun scripts/generate-architecture-map.ts",
     "validate:architecture": "bun scripts/generate-architecture-map.ts --check",
     "validate:template": "bun scripts/validate-template-health.ts",
