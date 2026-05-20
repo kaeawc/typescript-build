@@ -1,12 +1,13 @@
 import type { HttpClient, HttpRequest, HttpResponse } from "./HttpClient";
 import { HttpError } from "./HttpClient";
+import type { BackoffInput } from "./Backoff";
 import { DefaultRetryExecutor, type RetryExecutor } from "./retry/RetryExecutor";
 
 export interface RetryingHttpClientOptions {
   /** Max attempts including the initial try. Default: 3. */
   maxAttempts?: number;
   /** Delay strategy. Number (fixed ms), number[] (per-attempt), or function. */
-  delays?: number | number[] | ((attempt: number) => number);
+  delays?: BackoffInput;
   /** Custom retry predicate. Default: retry on 5xx responses and network errors. */
   shouldRetry?: (error: Error, response: HttpResponse | undefined, attempt: number) => boolean;
   /** Retry executor to use. Default: a new DefaultRetryExecutor. */

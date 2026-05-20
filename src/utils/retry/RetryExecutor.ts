@@ -1,3 +1,4 @@
+import { type BackoffInput, delayForAttempt } from "../Backoff";
 import { Timer, defaultTimer } from "../SystemTimer";
 
 /**
@@ -17,7 +18,7 @@ interface RetryOptions {
    * - (attempt: number) => number: Function to compute delay based on attempt number
    * Default: 1000ms fixed delay
    */
-  delays?: number | number[] | ((attempt: number) => number);
+  delays?: BackoffInput;
 
   /**
    * Optional abort signal to cancel retry loop.
@@ -92,20 +93,6 @@ export const DEFAULT_RETRY_OPTIONS: Required<Omit<RetryOptions, "signal" | "shou
 /**
  * Compute the delay for a given attempt.
  */
-function getDelay(delays: RetryOptions["delays"], attempt: number): number {
-  if (typeof delays === "number") {
-    return delays;
-  }
-  if (Array.isArray(delays)) {
-    // Use the last delay if attempt exceeds array length
-    return delays[Math.min(attempt - 1, delays.length - 1)] ?? 0;
-  }
-  if (typeof delays === "function") {
-    return delays(attempt);
-  }
-  return DEFAULT_RETRY_OPTIONS.delays as number;
-}
-
 /**
  * Default implementation of RetryExecutor.
  */
@@ -159,7 +146,7 @@ export class DefaultRetryExecutor implements RetryExecutor {
             };
           }
 
-          const delay = getDelay(delays, attempt);
+          const delay = delayForAttempt(delays, attempt);
           onRetry?.(lastError, attempt, delay);
 
           if (delay > 0) {

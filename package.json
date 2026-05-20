@@ -24,6 +24,7 @@
     "docs:architecture": "bun scripts/generate-architecture-map.ts",
     "validate:architecture": "bun scripts/generate-architecture-map.ts --check",
     "validate:template": "bun scripts/validate-template-health.ts",
+    "validate:fork": "bun scripts/validate-template-fork.ts",
     "prepublishOnly": "true",
     "postpublish": "true",
     "dead-code:ts": "bash scripts/detect-dead-code-ts.sh",
