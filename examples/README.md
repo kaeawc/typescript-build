@@ -14,6 +14,9 @@ Every example is tiny enough to read in one sitting.
 | [`cli-tool/`](./cli-tool/) | A focused CLI that parses args, reads env vars, writes structured logs, and returns proper exit codes. |
 | [`http-service/`](./http-service/) | A Hono service with typed routes, `/health`, dependency injection through a composition root, and a retrying outbound HTTP client. |
 | [`websocket-chat/`](./websocket-chat/) | A typed WebSocket server + client exchanging discriminated-union chat messages, using `MessageRouter` for dispatch. |
+| [`background-worker/`](./background-worker/) | Bounded-concurrency background work with retries, typed failures, and injectable dependencies. |
+| [`file-processor/`](./file-processor/) | File I/O through interfaces, checksum calculation, path containment, and `Result` errors. |
+| [`api-client/`](./api-client/) | Outbound HTTP with retries, schema validation, typed errors, and circuit breaking. |
 
 ## Running an example
 
@@ -23,6 +26,9 @@ From the repo root:
 bun examples/cli-tool/index.ts --name Ada
 bun examples/http-service/server.ts
 bun examples/websocket-chat/server.ts
+bun examples/background-worker/index.ts
+bun examples/file-processor/index.ts . package.json
+bun examples/api-client/index.ts https://api.example.test 123
 ```
 
 Each example has its own `README.md` with a detailed walk-through of which
