@@ -25,7 +25,7 @@ Write an ADR when:
 
 Don't write an ADR for:
 
-- Taste-level formatting choices (that's `eslint.config.mjs`'s job).
+- Taste-level formatting choices (that's `.oxfmtrc.json`'s job).
 - Anything already captured by a test or a schema.
 
 ## Naming

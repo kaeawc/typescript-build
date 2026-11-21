@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   // Single source of truth for type checking. Editors, `bun run typecheck`,
-  // and type-aware ESLint all read this file, so they report the same errors.
+  // and type-aware oxlint (tsgolint) all read this file, so they report the same errors.
   // Emit is handled by build.ts (Bun bundler) + tsconfig.declarations.json.
   "compilerOptions": {
     // Environment: Bun runtime with Node-compatible APIs.
