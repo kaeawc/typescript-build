@@ -74,18 +74,17 @@ type BunServeFn = (options: {
  * Broadcast uses Bun's native pub/sub (`subscribe`/`publish`), which is faster
  * than maintaining our own subscriber list.
  */
-export class BunWebSocketServer<TRequest extends WsMessage, TResponse extends WsResponse>
-implements WebSocketServer<TResponse> {
+export class BunWebSocketServer<
+  TRequest extends WsMessage,
+  TResponse extends WsResponse,
+> implements WebSocketServer<TResponse> {
   private readonly handlers: WebSocketServerHandlers<TRequest, TResponse>;
   private readonly serveImpl: BunServeFn;
   private bunServer: BunServer | null = null;
   private nextConnectionId: number = 1;
   private readonly wrappers: WeakMap<BunServerWebSocket, WsConnection<TResponse>> = new WeakMap();
 
-  constructor(
-    handlers: WebSocketServerHandlers<TRequest, TResponse>,
-    serveImpl?: BunServeFn
-  ) {
+  constructor(handlers: WebSocketServerHandlers<TRequest, TResponse>, serveImpl?: BunServeFn) {
     this.handlers = handlers;
 
     const globalBun = (globalThis as any).Bun as { serve: BunServeFn } | undefined;
@@ -162,11 +161,21 @@ implements WebSocketServer<TResponse> {
     }
     const connection: WsConnection<TResponse> = {
       id: ws.data.id,
-      send(message: TResponse) { ws.send(JSON.stringify(message)); },
-      close(code, reason) { ws.close(code, reason); },
-      subscribe(topic) { ws.subscribe(topic); },
-      unsubscribe(topic) { ws.unsubscribe(topic); },
-      isOpen() { return ws.readyState === 1; },
+      send(message: TResponse) {
+        ws.send(JSON.stringify(message));
+      },
+      close(code, reason) {
+        ws.close(code, reason);
+      },
+      subscribe(topic) {
+        ws.subscribe(topic);
+      },
+      unsubscribe(topic) {
+        ws.unsubscribe(topic);
+      },
+      isOpen() {
+        return ws.readyState === 1;
+      },
     };
     this.wrappers.set(ws, connection);
     return connection;

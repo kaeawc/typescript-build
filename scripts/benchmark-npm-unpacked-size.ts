@@ -110,7 +110,7 @@ function runCommand(cmd: string[], allowFailure = false): { stdout: string; stde
   const result = Bun.spawnSync({
     cmd,
     stdout: "pipe",
-    stderr: "pipe"
+    stderr: "pipe",
   });
 
   const stdout = decodeOutput(result.stdout);
@@ -159,7 +159,7 @@ function checkThreshold(actual: number, threshold: number): CategoryResult {
     actual,
     threshold,
     passed,
-    usage
+    usage,
   };
 }
 
@@ -211,7 +211,7 @@ function parsePackOutput(stdout: string): {
     version: packResult.version ?? "unknown",
     filename: packResult.filename ?? null,
     tarballBytes: typeof packResult.size === "number" ? packResult.size : null,
-    unpackedBytes: packResult.unpackedSize
+    unpackedBytes: packResult.unpackedSize,
   };
 }
 
@@ -240,7 +240,7 @@ function runBenchmark(config: ThresholdConfig, outputPath: string | null): Bench
 
     if (!result.passed) {
       violations.push(
-        `Unpacked size ${packInfo.unpackedBytes} bytes exceeds threshold ${config.thresholds.unpackedBytes} bytes`
+        `Unpacked size ${packInfo.unpackedBytes} bytes exceeds threshold ${config.thresholds.unpackedBytes} bytes`,
       );
     }
 
@@ -248,7 +248,7 @@ function runBenchmark(config: ThresholdConfig, outputPath: string | null): Bench
       timestamp: new Date().toISOString(),
       passed: result.passed,
       results: {
-        unpackedSize: result
+        unpackedSize: result,
       },
       thresholds: config.thresholds,
       package: {
@@ -256,9 +256,9 @@ function runBenchmark(config: ThresholdConfig, outputPath: string | null): Bench
         version: packInfo.version,
         filename: packInfo.filename,
         tarballBytes: packInfo.tarballBytes,
-        unpackedBytes: packInfo.unpackedBytes
+        unpackedBytes: packInfo.unpackedBytes,
       },
-      violations
+      violations,
     };
 
     if (outputPath) {
@@ -267,14 +267,12 @@ function runBenchmark(config: ThresholdConfig, outputPath: string | null): Bench
 
     if (!report.passed) {
       const details =
-        report.violations.length > 0
-          ? `\n${report.violations.map(violation => `- ${violation}`).join("\n")}`
-          : "";
+        report.violations.length > 0 ? `\n${report.violations.map(violation => `- ${violation}`).join("\n")}` : "";
       throw new Error(`NPM unpacked size benchmark failed - threshold exceeded${details}`);
     }
 
     console.log(
-      `NPM unpacked size: ${packInfo.unpackedBytes} bytes (threshold: ${config.thresholds.unpackedBytes} bytes)`
+      `NPM unpacked size: ${packInfo.unpackedBytes} bytes (threshold: ${config.thresholds.unpackedBytes} bytes)`,
     );
 
     return report;

@@ -15,7 +15,10 @@ type Visit = (type: string, node: unknown) => void;
 
 const cwd = path.resolve(import.meta.dir, "../..");
 
-const runRule = (rule: Rule, options: { filename?: string; options?: unknown[] } = {}): { visit: Visit; reports: Report[] } => {
+const runRule = (
+  rule: Rule,
+  options: { filename?: string; options?: unknown[] } = {},
+): { visit: Visit; reports: Report[] } => {
   const reports: Report[] = [];
   const context = {
     cwd,
@@ -128,7 +131,9 @@ describe("template/import-boundaries", () => {
 
   test("reports re-exports, export-all, and dynamic imports", () => {
     expect(check("src/utils/socket/Thing.ts", "ExportNamedDeclaration", "../../cli")).toHaveLength(1);
-    expect(check("test/fakes/FakeThing.ts", "ExportAllDeclaration", "../../examples/api-client/client")).toHaveLength(1);
+    expect(check("test/fakes/FakeThing.ts", "ExportAllDeclaration", "../../examples/api-client/client")).toHaveLength(
+      1,
+    );
     expect(check("src/config.ts", "ImportExpression", "./utils/filesystem/DefaultFileSystem")).toHaveLength(1);
   });
 

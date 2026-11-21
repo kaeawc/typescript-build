@@ -37,12 +37,7 @@
     },
     "lint": {
       "description": "Run ESLint with auto-fix on source and test files",
-      "inputs": [
-        "src/**",
-        "test/**",
-        "scripts/**/*.ts",
-        "eslint.config.mjs"
-      ],
+      "inputs": ["src/**", "test/**", "scripts/**/*.ts", "eslint.config.mjs"],
       "outputs": [],
       "outputLogs": "new-only",
       "passThroughEnv": ["CI", "GITHUB_ACTIONS"]
@@ -66,26 +61,14 @@
     },
     "test": {
       "description": "Run Bun test suite",
-      "inputs": [
-        "src/**",
-        "test/**",
-        "scripts/**",
-        "package.json",
-        "bunfig.toml"
-      ],
+      "inputs": ["src/**", "test/**", "scripts/**", "package.json", "bunfig.toml"],
       "outputs": [],
       "outputLogs": "new-only",
       "passThroughEnv": ["CI", "GITHUB_ACTIONS"]
     },
     "test:coverage": {
       "description": "Run tests with coverage reporting to coverage/",
-      "inputs": [
-        "src/**",
-        "test/**",
-        "scripts/**",
-        "package.json",
-        "bunfig.toml"
-      ],
+      "inputs": ["src/**", "test/**", "scripts/**", "package.json", "bunfig.toml"],
       "outputs": ["coverage/**"],
       "outputLogs": "new-only",
       "passThroughEnv": ["CI", "GITHUB_ACTIONS"]
@@ -150,12 +133,7 @@
     },
     "benchmark:perf": {
       "description": "Run local performance budgets for representative hot paths",
-      "inputs": [
-        "src/**",
-        "scripts/benchmark-performance.ts",
-        "scripts/performance-thresholds.json",
-        "package.json"
-      ],
+      "inputs": ["src/**", "scripts/benchmark-performance.ts", "scripts/performance-thresholds.json", "package.json"],
       "outputs": [],
       "outputLogs": "new-only",
       "passThroughEnv": ["CI", "GITHUB_ACTIONS"]

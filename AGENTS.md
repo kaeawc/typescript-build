@@ -132,40 +132,40 @@ lefthook.yml          Git hooks (pre-commit + pre-push)
 All accept an interface + have a fake (or are stateless enough not to need one).
 Inject them through constructors or function parameters; do not reach for globals.
 
-| Interface | Real | Fake | Use for |
-|-----------|------|------|---------|
-| `Timer` | `SystemTimer` / `defaultTimer` | `FakeTimer` | Anything that sleeps, polls, or schedules |
-| `FileSystem` | `DefaultFileSystem` | `FakeFileSystem` | File I/O |
-| `HostCommandExecutor` | `DefaultHostCommandExecutor` | `FakeHostCommandExecutor` | One-shot `execFile` calls |
-| `ProcessExecutor` | `DefaultProcessExecutor` | `FakeProcessExecutor` | `exec`/`spawn` (includes `FakeChildProcess`) |
-| `FileDownloader` | `DefaultFileDownloader` | `FakeFileDownloader` | HTTP downloads with curl/wget fallback |
-| `ChecksumCalculator` | `DefaultChecksumCalculator` | `FakeChecksumCalculator` | SHA-256 file digests with fallback tools |
-| `HttpClient` | `NodeHttpClient` | `FakeHttpClient` | Outbound HTTP requests |
-| `CryptoService` | `NodeCryptoService` | — (stateless) | Cache keys, sha256 verification |
-| `IdGenerator` | `NodeIdGenerator` / `CountingIdGenerator` | `FakeIdGenerator` | Request IDs, trace IDs, correlation tokens |
-| `RetryExecutor` | `DefaultRetryExecutor` | use `FakeTimer` for time control | Exponential backoff + abort-aware retries |
-| — | `RequestManager` | use `FakeTimer` | Request/response correlation with timeout |
-| — | `TTLCache<K, V>` | use `FakeTimer` | Memoization with TTL + LRU |
-| — | `AsyncMutex` / `Semaphore` | none needed | Async mutual exclusion, concurrency limits |
-| — | `JsonSchemaValidator` (ajv) | none needed | Validate JS values against a JSON schema with structured errors |
-| — | `parseYaml` / `dumpYaml` | none needed | Structured YAML parsing with line/column error info |
-| — | `runWithAbortSignal` / `getAbortSignal` | — | Propagating `AbortSignal` across async boundaries |
-| — | `SocketClient<TReq, TRes>` + `RequestResponseSocketServer<TReq, TRes>` | write a local test double over a real temp-dir socket | Typed unix-socket request/response protocol |
-| `HttpServer` | `HonoHttpServer` (`createHonoServer`) | `FakeHttpServer` | Inbound HTTP. Hono-backed, Bun-first, portable to Node/Deno/CF |
-| `HttpClient` (decorator) | `RetryingHttpClient` | use `FakeHttpClient` + `FakeTimer` | Retries + backoff over any `HttpClient`; delegates to `RetryExecutor` |
-| `WebSocketServer<TRes>` | `BunWebSocketServer<TReq, TRes>` | `FakeWebSocketPair` | Typed WebSocket server over `Bun.serve` with native pub/sub broadcast |
-| `WebSocketClient<TReq, TRes>` | `BunWebSocketClient<TReq, TRes>` | `FakeWebSocketPair` | Typed WebSocket client with request/response correlation + reconnect-with-backoff |
-| — | `MessageRouter<TMessage, TContext, TResult>` | none needed | Discriminated-union dispatch (the TS equivalent of a sealed-class `when`) |
-| `Clock` | `SystemClock` / `systemClock` | `FakeClock` | Absolute-time reads: token expiration, audit logs, cache freshness |
-| `Random` | `CryptoRandom` | `SeededRandom` (mulberry32) | Random IDs, shuffles, picks, jitter |
-| `EnvReader` | `ProcessEnvReader` | pass any `Record<string, string \| undefined>` as the source | Env-var access inside individual modules |
-| `KvStore<V>` | `InMemoryKvStore<V>` | same impl — swap a persistent subclass at the composition root | Key-value storage with optional TTL |
-| `Tracer` | `NoopTracer` / `noopTracer` | `RecordingTracer` | OpenTelemetry-shaped spans with AsyncLocalStorage propagation |
-| — | `Result<T, E>` + `ok`/`err`/`tryCatch`/`tryCatchAsync`/`all` | none needed | Expected-failure return values (ADR-0006) |
-| — | `TaggedError<TTag>` + `isTagged` | none needed | Discriminated-union error hierarchy |
-| — | `Brand<T, B>` + `brand<B>()` | none needed | Nominal typing for primitive values |
-| — | `ShutdownCoordinator` | use `FakeTimer` | Graceful LIFO teardown with per-hook timeouts |
-| — | `installErrorHandlers({ logger })` | override `onUncaught` | Top-level process error handling |
+| Interface                     | Real                                                                   | Fake                                                           | Use for                                                                           |
+| ----------------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `Timer`                       | `SystemTimer` / `defaultTimer`                                         | `FakeTimer`                                                    | Anything that sleeps, polls, or schedules                                         |
+| `FileSystem`                  | `DefaultFileSystem`                                                    | `FakeFileSystem`                                               | File I/O                                                                          |
+| `HostCommandExecutor`         | `DefaultHostCommandExecutor`                                           | `FakeHostCommandExecutor`                                      | One-shot `execFile` calls                                                         |
+| `ProcessExecutor`             | `DefaultProcessExecutor`                                               | `FakeProcessExecutor`                                          | `exec`/`spawn` (includes `FakeChildProcess`)                                      |
+| `FileDownloader`              | `DefaultFileDownloader`                                                | `FakeFileDownloader`                                           | HTTP downloads with curl/wget fallback                                            |
+| `ChecksumCalculator`          | `DefaultChecksumCalculator`                                            | `FakeChecksumCalculator`                                       | SHA-256 file digests with fallback tools                                          |
+| `HttpClient`                  | `NodeHttpClient`                                                       | `FakeHttpClient`                                               | Outbound HTTP requests                                                            |
+| `CryptoService`               | `NodeCryptoService`                                                    | — (stateless)                                                  | Cache keys, sha256 verification                                                   |
+| `IdGenerator`                 | `NodeIdGenerator` / `CountingIdGenerator`                              | `FakeIdGenerator`                                              | Request IDs, trace IDs, correlation tokens                                        |
+| `RetryExecutor`               | `DefaultRetryExecutor`                                                 | use `FakeTimer` for time control                               | Exponential backoff + abort-aware retries                                         |
+| —                             | `RequestManager`                                                       | use `FakeTimer`                                                | Request/response correlation with timeout                                         |
+| —                             | `TTLCache<K, V>`                                                       | use `FakeTimer`                                                | Memoization with TTL + LRU                                                        |
+| —                             | `AsyncMutex` / `Semaphore`                                             | none needed                                                    | Async mutual exclusion, concurrency limits                                        |
+| —                             | `JsonSchemaValidator` (ajv)                                            | none needed                                                    | Validate JS values against a JSON schema with structured errors                   |
+| —                             | `parseYaml` / `dumpYaml`                                               | none needed                                                    | Structured YAML parsing with line/column error info                               |
+| —                             | `runWithAbortSignal` / `getAbortSignal`                                | —                                                              | Propagating `AbortSignal` across async boundaries                                 |
+| —                             | `SocketClient<TReq, TRes>` + `RequestResponseSocketServer<TReq, TRes>` | write a local test double over a real temp-dir socket          | Typed unix-socket request/response protocol                                       |
+| `HttpServer`                  | `HonoHttpServer` (`createHonoServer`)                                  | `FakeHttpServer`                                               | Inbound HTTP. Hono-backed, Bun-first, portable to Node/Deno/CF                    |
+| `HttpClient` (decorator)      | `RetryingHttpClient`                                                   | use `FakeHttpClient` + `FakeTimer`                             | Retries + backoff over any `HttpClient`; delegates to `RetryExecutor`             |
+| `WebSocketServer<TRes>`       | `BunWebSocketServer<TReq, TRes>`                                       | `FakeWebSocketPair`                                            | Typed WebSocket server over `Bun.serve` with native pub/sub broadcast             |
+| `WebSocketClient<TReq, TRes>` | `BunWebSocketClient<TReq, TRes>`                                       | `FakeWebSocketPair`                                            | Typed WebSocket client with request/response correlation + reconnect-with-backoff |
+| —                             | `MessageRouter<TMessage, TContext, TResult>`                           | none needed                                                    | Discriminated-union dispatch (the TS equivalent of a sealed-class `when`)         |
+| `Clock`                       | `SystemClock` / `systemClock`                                          | `FakeClock`                                                    | Absolute-time reads: token expiration, audit logs, cache freshness                |
+| `Random`                      | `CryptoRandom`                                                         | `SeededRandom` (mulberry32)                                    | Random IDs, shuffles, picks, jitter                                               |
+| `EnvReader`                   | `ProcessEnvReader`                                                     | pass any `Record<string, string \| undefined>` as the source   | Env-var access inside individual modules                                          |
+| `KvStore<V>`                  | `InMemoryKvStore<V>`                                                   | same impl — swap a persistent subclass at the composition root | Key-value storage with optional TTL                                               |
+| `Tracer`                      | `NoopTracer` / `noopTracer`                                            | `RecordingTracer`                                              | OpenTelemetry-shaped spans with AsyncLocalStorage propagation                     |
+| —                             | `Result<T, E>` + `ok`/`err`/`tryCatch`/`tryCatchAsync`/`all`           | none needed                                                    | Expected-failure return values (ADR-0006)                                         |
+| —                             | `TaggedError<TTag>` + `isTagged`                                       | none needed                                                    | Discriminated-union error hierarchy                                               |
+| —                             | `Brand<T, B>` + `brand<B>()`                                           | none needed                                                    | Nominal typing for primitive values                                               |
+| —                             | `ShutdownCoordinator`                                                  | use `FakeTimer`                                                | Graceful LIFO teardown with per-hook timeouts                                     |
+| —                             | `installErrorHandlers({ logger })`                                     | override `onUncaught`                                          | Top-level process error handling                                                  |
 
 ### Patterns baked into the template
 
@@ -178,7 +178,7 @@ Inject them through constructors or function parameters; do not reach for global
   new implementation? Register it there so the shared contract catches drift.
   See `test/contracts/README.md`.
 - **ADRs** — non-obvious decisions live in `docs/adr/` so agents can read
-  *why* the code looks the way it does. Write a new ADR when you pick a
+  _why_ the code looks the way it does. Write a new ADR when you pick a
   library, establish a convention, or make a testability/portability tradeoff
   that a reader will later question.
 - **Architectural boundaries** — `eslint.config.mjs` uses

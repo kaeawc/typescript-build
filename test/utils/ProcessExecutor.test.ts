@@ -17,9 +17,15 @@ describe("FakeProcessExecutor", () => {
     fake.setCommandResponse("ls", {
       stdout: "file.txt",
       stderr: "",
-      toString() { return "file.txt"; },
-      trim() { return "file.txt"; },
-      includes(s: string) { return "file.txt".includes(s); },
+      toString() {
+        return "file.txt";
+      },
+      trim() {
+        return "file.txt";
+      },
+      includes(s: string) {
+        return "file.txt".includes(s);
+      },
     });
 
     const result = await fake.exec("ls -la");
@@ -33,9 +39,15 @@ describe("FakeProcessExecutor", () => {
     fake.setDefaultResponse({
       stdout: "default-out",
       stderr: "",
-      toString() { return "default-out"; },
-      trim() { return "default-out"; },
-      includes(s: string) { return "default-out".includes(s); },
+      toString() {
+        return "default-out";
+      },
+      trim() {
+        return "default-out";
+      },
+      includes(s: string) {
+        return "default-out".includes(s);
+      },
     });
     const result = await fake.exec("anything");
     expect(result.trim()).toBe("default-out");

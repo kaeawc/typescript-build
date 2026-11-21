@@ -10,16 +10,6 @@
     "rootDir": ".",
     "stripInternal": true
   },
-  "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "coverage",
-    "scratch",
-    "test",
-    "scripts",
-    "examples"
-  ]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "coverage", "scratch", "test", "scripts", "examples"]
 }

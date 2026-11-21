@@ -13,7 +13,9 @@ describe("FakeWebSocketPair", () => {
   test("client send is delivered to the server handler", async () => {
     const received: ChatRequest[] = [];
     const pair = new FakeWebSocketPair<ChatRequest, ChatResponse>({
-      onMessage: msg => { received.push(msg); },
+      onMessage: msg => {
+        received.push(msg);
+      },
     });
 
     await pair.open();
@@ -39,7 +41,9 @@ describe("FakeWebSocketPair", () => {
 
   test("broadcast reaches subscribers and misses non-subscribers", async () => {
     const pair = new FakeWebSocketPair<ChatRequest, ChatResponse>({
-      onMessage: (_msg, conn) => { conn.subscribe("room:lobby"); },
+      onMessage: (_msg, conn) => {
+        conn.subscribe("room:lobby");
+      },
     });
     await pair.open();
     await pair.client.send({ type: "join", room: "lobby" });
@@ -54,9 +58,13 @@ describe("FakeWebSocketPair", () => {
   test("open/close lifecycle fires handlers", async () => {
     const log: string[] = [];
     const pair = new FakeWebSocketPair<ChatRequest, ChatResponse>({
-      onOpen: () => { log.push("open"); },
+      onOpen: () => {
+        log.push("open");
+      },
       onMessage: () => {},
-      onClose: (_conn, code) => { log.push(`close:${code}`); },
+      onClose: (_conn, code) => {
+        log.push(`close:${code}`);
+      },
     });
 
     await pair.open();

@@ -28,7 +28,7 @@ export class HttpError extends Error {
     message: string,
     public readonly request: HttpRequest,
     public readonly response?: HttpResponse,
-    public override readonly cause?: unknown
+    public override readonly cause?: unknown,
   ) {
     super(message);
     this.name = "HttpError";
@@ -129,7 +129,7 @@ export class NodeHttpClient implements HttpClient {
 }
 
 const encodeBody = (
-  body: HttpRequest["body"]
+  body: HttpRequest["body"],
 ): { body: string | Uint8Array | undefined; contentType: string | undefined } => {
   if (body === undefined || body === null) {
     return { body: undefined, contentType: undefined };

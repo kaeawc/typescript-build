@@ -24,8 +24,10 @@ const namingConvention = defineRule({
     docs: { description: "Enforce interface and class naming conventions" },
     messages: {
       notPascalCase: "{{kind}} '{{name}}' must be PascalCase.",
-      interfaceAffix: "Interface '{{name}}' must not use an 'I' prefix or 'Interface' suffix; name the concept instead.",
-      implSuffix: "Class '{{name}}' must not use an 'Impl' suffix; name the implementation strategy instead (e.g. 'NodeHttpClient').",
+      interfaceAffix:
+        "Interface '{{name}}' must not use an 'I' prefix or 'Interface' suffix; name the concept instead.",
+      implSuffix:
+        "Class '{{name}}' must not use an 'Impl' suffix; name the implementation strategy instead (e.g. 'NodeHttpClient').",
     },
     schema: [],
   },
@@ -133,7 +135,11 @@ const importBoundaries = defineRule({
       const target = path.resolve(path.dirname(context.filename), source.value);
       const toLayer = classifyModule(toModuleId(path.relative(context.cwd, target)), options.elements);
       if (toLayer !== undefined && forbidden.includes(toLayer)) {
-        context.report({ node: source, messageId: "disallowed", data: { from: fromLayer, to: toLayer, source: source.value } });
+        context.report({
+          node: source,
+          messageId: "disallowed",
+          data: { from: fromLayer, to: toLayer, source: source.value },
+        });
       }
     };
 

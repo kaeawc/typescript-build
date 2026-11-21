@@ -11,7 +11,7 @@ export interface FileSystemContractOptions {
 export const runFileSystemContract = (
   description: string,
   makeFs: () => Promise<FileSystem> | FileSystem,
-  options: FileSystemContractOptions
+  options: FileSystemContractOptions,
 ): void => {
   const { root } = options;
   describe(`FileSystem contract — ${description}`, () => {

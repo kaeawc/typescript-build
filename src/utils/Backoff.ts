@@ -56,9 +56,7 @@ export const sequenceBackoff = (delaysMs: readonly number[]): BackoffPolicy => {
 export const exponentialBackoff = (options: ExponentialBackoffOptions): BackoffPolicy => {
   const initialDelayMs = normalizeDelay(options.initialDelayMs);
   const multiplier = options.multiplier ?? 2;
-  const maxDelayMs = options.maxDelayMs === undefined
-    ? Number.POSITIVE_INFINITY
-    : normalizeDelay(options.maxDelayMs);
+  const maxDelayMs = options.maxDelayMs === undefined ? Number.POSITIVE_INFINITY : normalizeDelay(options.maxDelayMs);
 
   if (!Number.isFinite(multiplier) || multiplier < 1) {
     throw new Error(`exponentialBackoff multiplier must be >= 1, got ${multiplier}`);
@@ -67,7 +65,7 @@ export const exponentialBackoff = (options: ExponentialBackoffOptions): BackoffP
   return {
     delayForAttempt(attempt: number): number {
       assertAttempt(attempt);
-      const delay = initialDelayMs * (multiplier ** (attempt - 1));
+      const delay = initialDelayMs * multiplier ** (attempt - 1);
       return normalizeDelay(Math.min(delay, maxDelayMs));
     },
   };
@@ -88,7 +86,7 @@ export const withJitter = (policy: BackoffPolicy, options: JitterOptions): Backo
       const spread = delay * factor;
       const min = delay - spread;
       const max = delay + spread;
-      return normalizeDelay(min + ((max - min) * options.random.next()));
+      return normalizeDelay(min + (max - min) * options.random.next());
     },
   };
 };

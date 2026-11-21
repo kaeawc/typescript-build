@@ -20,7 +20,7 @@ type ExecAsync = (
     timeout?: number;
     maxBuffer?: number;
     cwd?: string;
-  }
+  },
 ) => Promise<{ stdout: string | Buffer; stderr: string | Buffer }>;
 
 const execAsync: ExecAsync = promisify(exec);

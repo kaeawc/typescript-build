@@ -1,5 +1,10 @@
 import { describe, expect, test } from "bun:test";
-import { createPathResolver, findNearestAncestorContaining, isPathInside, resolveInsideRoot } from "../../src/utils/PathResolver";
+import {
+  createPathResolver,
+  findNearestAncestorContaining,
+  isPathInside,
+  resolveInsideRoot,
+} from "../../src/utils/PathResolver";
 import { FakeFileSystem } from "../fakes/FakeFileSystem";
 
 describe("PathResolver", () => {

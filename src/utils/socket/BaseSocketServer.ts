@@ -112,19 +112,29 @@ export abstract class BaseSocketServer {
   protected abstract processLine(socket: Socket, line: string): Promise<void>;
 
   /** Override for custom server-startup work. */
-  protected onServerStarted(): void { /* no-op */ }
+  protected onServerStarted(): void {
+    /* no-op */
+  }
 
   /** Override for custom shutdown work (called before the server closes). */
-  protected onServerClosing(): void { /* no-op */ }
+  protected onServerClosing(): void {
+    /* no-op */
+  }
 
   /** Override for custom per-connection setup. */
-  protected onConnectionEstablished(_socket: Socket): void { /* no-op */ }
+  protected onConnectionEstablished(_socket: Socket): void {
+    /* no-op */
+  }
 
   /** Override for custom per-connection error handling. */
-  protected onConnectionError(_socket: Socket, _error: Error): void { /* no-op */ }
+  protected onConnectionError(_socket: Socket, _error: Error): void {
+    /* no-op */
+  }
 
   /** Override for custom per-connection teardown. */
-  protected onConnectionClose(_socket: Socket): void { /* no-op */ }
+  protected onConnectionClose(_socket: Socket): void {
+    /* no-op */
+  }
 
   /** Send a JSON value followed by a newline. */
   protected sendJson(socket: Socket, data: unknown): void {

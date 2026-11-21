@@ -49,9 +49,10 @@ runHttpClientContract("NodeHttpClient (with injected fetch stub)", {
     let index = 0;
     const fakeFetch = (async () => {
       const current = responses[index++]!;
-      const init: ResponseInit = current.headers === undefined
-        ? { status: current.status }
-        : { status: current.status, headers: current.headers };
+      const init: ResponseInit =
+        current.headers === undefined
+          ? { status: current.status }
+          : { status: current.status, headers: current.headers };
       return new Response(current.body, init);
     }) as unknown as typeof fetch;
     return new NodeHttpClient({ fetchImpl: fakeFetch });
@@ -84,8 +85,12 @@ runFileSystemContract("FakeFileSystem", () => new FakeFileSystem(), {
 
 // Timer — real + fake (auto-advance mode so sleep doesn't hang)
 runTimerContract("SystemTimer", () => new SystemTimer(), { realTime: true });
-runTimerContract("FakeTimer (auto-advance)", () => {
-  const timer = new FakeTimer();
-  timer.enableAutoAdvance();
-  return timer;
-}, { realTime: false });
+runTimerContract(
+  "FakeTimer (auto-advance)",
+  () => {
+    const timer = new FakeTimer();
+    timer.enableAutoAdvance();
+    return timer;
+  },
+  { realTime: false },
+);

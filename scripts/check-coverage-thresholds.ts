@@ -124,7 +124,7 @@ const parseLcov = (source: string): CoverageTotals => {
   return totals;
 };
 
-const pct = (covered: number, found: number): number => found === 0 ? 100 : (covered / found) * 100;
+const pct = (covered: number, found: number): number => (found === 0 ? 100 : (covered / found) * 100);
 const round = (value: number): number => Math.round(value * 100) / 100;
 
 const main = (): number => {

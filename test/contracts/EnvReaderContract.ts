@@ -6,10 +6,7 @@ export interface EnvReaderContractFactory {
   make(source: Record<string, string | undefined>): EnvReader;
 }
 
-export const runEnvReaderContract = (
-  description: string,
-  factory: EnvReaderContractFactory
-): void => {
+export const runEnvReaderContract = (description: string, factory: EnvReaderContractFactory): void => {
   describe(`EnvReader contract — ${description}`, () => {
     test("get returns the raw value or undefined", () => {
       const env = factory.make({ A: "hello" });
@@ -41,8 +38,16 @@ export const runEnvReaderContract = (
 
     test("getBool accepts common true/false strings", () => {
       const env = factory.make({
-        T1: "true", T2: "TRUE", T3: "1", T4: "yes", T5: "on",
-        F1: "false", F2: "FALSE", F3: "0", F4: "no", F5: "off",
+        T1: "true",
+        T2: "TRUE",
+        T3: "1",
+        T4: "yes",
+        T5: "on",
+        F1: "false",
+        F2: "FALSE",
+        F3: "0",
+        F4: "no",
+        F5: "off",
       });
       for (const key of ["T1", "T2", "T3", "T4", "T5"]) {
         expect(env.getBool(key)).toBe(true);

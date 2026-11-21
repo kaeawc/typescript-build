@@ -16,7 +16,9 @@ interface TurboJson {
 const failures: string[] = [];
 
 const readJson = <T>(path: string): T => JSON.parse(readFileSync(path, "utf8")) as T;
-const fail = (message: string): void => { failures.push(message); };
+const fail = (message: string): void => {
+  failures.push(message);
+};
 
 const packageJson = readJson<PackageJson>("package.json");
 const scripts = packageJson.scripts ?? {};
@@ -55,11 +57,18 @@ if (!bunVersion) {
 const setupAction = readFileSync(".github/actions/setup-bun-turbo/action.yml", "utf8");
 const actionVersion = setupAction.match(/default: "([^"]+)"/)?.[1];
 if (bunVersion && actionVersion !== bunVersion) {
-  fail(`Bun version mismatch: packageManager uses ${bunVersion}, setup-bun-turbo default uses ${actionVersion ?? "unknown"}`);
+  fail(
+    `Bun version mismatch: packageManager uses ${bunVersion}, setup-bun-turbo default uses ${actionVersion ?? "unknown"}`,
+  );
 }
 
 const readme = readFileSync("README.md", "utf8");
-for (const script of ["bun run typecheck", "bun run lint:types", "bun run package:quality", "bun run validate:template"]) {
+for (const script of [
+  "bun run typecheck",
+  "bun run lint:types",
+  "bun run package:quality",
+  "bun run validate:template",
+]) {
   if (!readme.includes(script)) {
     fail(`README.md should mention ${script}`);
   }
@@ -79,7 +88,11 @@ if (!existsSync("docs/architecture-map.md")) {
 }
 
 const source = Bun.spawnSync({
-  cmd: ["bash", "-lc", "rg 'from \"\\.{1,2}/.*\\.(ts|js)\"|from '\\''\\.{1,2}/.*\\.(ts|js)'\\''' src test scripts examples --glob '*.ts'"],
+  cmd: [
+    "bash",
+    "-lc",
+    "rg 'from \"\\.{1,2}/.*\\.(ts|js)\"|from '\\''\\.{1,2}/.*\\.(ts|js)'\\''' src test scripts examples --glob '*.ts'",
+  ],
   stdout: "pipe",
   stderr: "pipe",
 });

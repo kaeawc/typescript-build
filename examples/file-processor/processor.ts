@@ -24,7 +24,7 @@ export interface FileProcessorDeps {
 export const buildManifestEntry = async (
   rootDirectory: string,
   relativePath: string,
-  deps: FileProcessorDeps
+  deps: FileProcessorDeps,
 ): Promise<Result<FileManifestEntry, FileProcessingError>> => {
   let absolutePath: string;
   try {

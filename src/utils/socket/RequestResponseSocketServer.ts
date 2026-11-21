@@ -53,7 +53,7 @@ export abstract class RequestResponseSocketServer<
     } catch (error) {
       const errorResponse = this.createErrorResponse(
         request.id,
-        error instanceof Error ? error.message : String(error)
+        error instanceof Error ? error.message : String(error),
       );
       this.sendJson(socket, errorResponse);
     }

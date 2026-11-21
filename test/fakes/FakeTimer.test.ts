@@ -41,7 +41,9 @@ describe("FakeTimer", () => {
     const timer = new FakeTimer();
     let fired = 0;
 
-    timer.setTimeout(() => { fired += 1; }, 500);
+    timer.setTimeout(() => {
+      fired += 1;
+    }, 500);
     timer.advanceTime(499);
     expect(fired).toBe(0);
 
@@ -52,7 +54,9 @@ describe("FakeTimer", () => {
   test("clearTimeout prevents the callback from firing", () => {
     const timer = new FakeTimer();
     let fired = 0;
-    const handle = timer.setTimeout(() => { fired += 1; }, 500);
+    const handle = timer.setTimeout(() => {
+      fired += 1;
+    }, 500);
     timer.clearTimeout(handle);
 
     timer.advanceTime(1000);
@@ -63,7 +67,9 @@ describe("FakeTimer", () => {
     const timer = new FakeTimer();
     let ticks = 0;
 
-    timer.setInterval(() => { ticks += 1; }, 100);
+    timer.setInterval(() => {
+      ticks += 1;
+    }, 100);
     timer.advanceTime(100);
     timer.advanceTime(100);
     timer.advanceTime(100);
@@ -74,7 +80,9 @@ describe("FakeTimer", () => {
   test("clearInterval stops further ticks", () => {
     const timer = new FakeTimer();
     let ticks = 0;
-    const handle = timer.setInterval(() => { ticks += 1; }, 100);
+    const handle = timer.setInterval(() => {
+      ticks += 1;
+    }, 100);
 
     timer.advanceTime(150);
     timer.clearInterval(handle);

@@ -7,19 +7,19 @@ interface UserConfig {
 }
 
 const userConfigSchema = {
-  "$id": "user-config",
-  "type": "object",
-  "required": ["name", "retries"],
-  "properties": {
-    "name": { "type": "string" },
-    "retries": { "type": "integer", "minimum": 0 },
+  $id: "user-config",
+  type: "object",
+  required: ["name", "retries"],
+  properties: {
+    name: { type: "string" },
+    retries: { type: "integer", minimum: 0 },
   },
-  "additionalProperties": false,
+  additionalProperties: false,
 } as const;
 
 describe("Schema helpers", () => {
   test("parseJsonObject parses object-shaped JSON", () => {
-    const result = parseJsonObject("{\"name\":\"Ada\"}");
+    const result = parseJsonObject('{"name":"Ada"}');
 
     expect(result.ok).toBe(true);
     if (result.ok) {

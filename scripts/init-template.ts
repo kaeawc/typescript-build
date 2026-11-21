@@ -97,15 +97,10 @@ export const parseTemplateInitArgs = (args: string[]): TemplateInitOptions => {
     binName: resolvedBinName,
     dryRun,
   };
-  return description === undefined
-    ? base
-    : { ...base, description };
+  return description === undefined ? base : { ...base, description };
 };
 
-export const updatePackageJson = (
-  packageJson: PackageJson,
-  options: TemplateInitOptions
-): PackageJson => {
+export const updatePackageJson = (packageJson: PackageJson, options: TemplateInitOptions): PackageJson => {
   const next: PackageJson = {
     ...packageJson,
     name: options.packageName,
@@ -116,12 +111,9 @@ export const updatePackageJson = (
   }
 
   const existingBin = packageJson.bin;
-  const binEntries = typeof existingBin === "object" && existingBin !== null
-    ? { ...existingBin }
-    : {};
-  const binTarget = typeof existingBin === "string"
-    ? existingBin
-    : binEntries[templateBinName] ?? "./dist/src/index.js";
+  const binEntries = typeof existingBin === "object" && existingBin !== null ? { ...existingBin } : {};
+  const binTarget =
+    typeof existingBin === "string" ? existingBin : (binEntries[templateBinName] ?? "./dist/src/index.js");
 
   delete binEntries[templateBinName];
   next.bin = {
@@ -132,10 +124,7 @@ export const updatePackageJson = (
   return next;
 };
 
-export const updateMarkdownIntro = (
-  markdown: string,
-  options: TemplateInitOptions
-): string => {
+export const updateMarkdownIntro = (markdown: string, options: TemplateInitOptions): string => {
   let next = markdown.replace(/^# .+$/m, `# ${options.packageName}`);
   if (options.description === undefined) {
     return next;
@@ -143,7 +132,7 @@ export const updateMarkdownIntro = (
 
   next = next.replace(
     /^(# .+\n\n)([\s\S]*?)(\n\n)/,
-    (_match, prefix: string, _currentDescription: string, suffix: string) => `${prefix}${options.description}${suffix}`
+    (_match, prefix: string, _currentDescription: string, suffix: string) => `${prefix}${options.description}${suffix}`,
   );
   return next;
 };
@@ -170,12 +159,14 @@ const runTemplateInit = (options: TemplateInitOptions): string[] => {
   const agents = readFileSync(agentsPath, "utf8");
 
   const changed: string[] = [];
-  if (writeIfChanged(
-    packagePath,
-    packageJsonText,
-    formatJson(updatePackageJson(JSON.parse(packageJsonText) as PackageJson, options)),
-    options.dryRun
-  )) {
+  if (
+    writeIfChanged(
+      packagePath,
+      packageJsonText,
+      formatJson(updatePackageJson(JSON.parse(packageJsonText) as PackageJson, options)),
+      options.dryRun,
+    )
+  ) {
     changed.push(packagePath);
   }
 

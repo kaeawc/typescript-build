@@ -41,8 +41,12 @@ const stderr = new TextDecoder().decode(proc.stderr);
 
 if (proc.exitCode !== 0) {
   console.error("bun test failed; see output below:");
-  if (stdout.trim()) { console.error(stdout); }
-  if (stderr.trim()) { console.error(stderr); }
+  if (stdout.trim()) {
+    console.error(stdout);
+  }
+  if (stderr.trim()) {
+    console.error(stderr);
+  }
   process.exit(1);
 }
 
@@ -50,7 +54,7 @@ console.log(`bun test finished in ${elapsed}ms (budget: ${budgetMs}ms)`);
 
 if (elapsed > budgetMs) {
   console.error(
-    `::error::Test suite exceeded the ${budgetMs}ms budget. Keep tests fast — profile the slowest files with \`bun test --verbose\`.`
+    `::error::Test suite exceeded the ${budgetMs}ms budget. Keep tests fast — profile the slowest files with \`bun test --verbose\`.`,
   );
   process.exit(1);
 }

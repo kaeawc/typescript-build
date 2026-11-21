@@ -1,15 +1,7 @@
 {
   "$schema": "https://unpkg.com/knip@latest/schema.json",
-  "entry": [
-    "src/index.ts",
-    "test/**/*.ts",
-    "scripts/**/*.ts"
-  ],
-  "project": [
-    "src/**/*.ts",
-    "test/**/*.ts",
-    "scripts/**/*.ts"
-  ],
+  "entry": ["src/index.ts", "test/**/*.ts", "scripts/**/*.ts"],
+  "project": ["src/**/*.ts", "test/**/*.ts", "scripts/**/*.ts"],
   "ignore": [],
   "ignoreDependencies": ["ts-prune"],
   "ignoreBinaries": [],

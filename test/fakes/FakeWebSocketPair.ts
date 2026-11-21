@@ -77,10 +77,18 @@ export class FakeServerSide<TRequest extends WsMessage, TResponse extends WsResp
   private asConnection(): WsConnection<TResponse> {
     return {
       id: "fake-conn",
-      send: (message: TResponse) => { this.send(message); },
-      close: (code = 1000, reason = "closed") => { void this.simulateClose(code, reason); },
-      subscribe: topic => { this.subscriptions.add(topic); },
-      unsubscribe: topic => { this.subscriptions.delete(topic); },
+      send: (message: TResponse) => {
+        this.send(message);
+      },
+      close: (code = 1000, reason = "closed") => {
+        void this.simulateClose(code, reason);
+      },
+      subscribe: topic => {
+        this.subscriptions.add(topic);
+      },
+      unsubscribe: topic => {
+        this.subscriptions.delete(topic);
+      },
       isOpen: () => this.isConnected,
     };
   }

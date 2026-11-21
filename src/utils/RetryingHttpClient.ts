@@ -18,11 +18,7 @@ export interface RetryingHttpClientOptions {
  * Default retry predicate: network errors always retry; 5xx responses retry.
  * Everything else (including 4xx) is treated as a non-retryable failure.
  */
-export const defaultShouldRetry = (
-  error: Error,
-  response: HttpResponse | undefined,
-  _attempt: number
-): boolean => {
+export const defaultShouldRetry = (error: Error, response: HttpResponse | undefined, _attempt: number): boolean => {
   if (error instanceof HttpError && response === undefined) {
     return true;
   }
@@ -75,38 +71,32 @@ export class RetryingHttpClient implements HttpClient {
       retryOptions.signal = request.signal;
     }
 
-    await this.retryExecutor.executeOrThrow(
-      async attempt => {
-        let response: HttpResponse | undefined;
-        let caughtError: Error | undefined;
+    await this.retryExecutor.executeOrThrow(async attempt => {
+      let response: HttpResponse | undefined;
+      let caughtError: Error | undefined;
 
-        try {
-          response = await this.delegate.send(request);
-        } catch (error) {
-          caughtError = error instanceof Error ? error : new Error(String(error));
-        }
+      try {
+        response = await this.delegate.send(request);
+      } catch (error) {
+        caughtError = error instanceof Error ? error : new Error(String(error));
+      }
 
-        const sentinelError = caughtError ?? new HttpError(
-          `HTTP ${response!.status} from ${request.url}`,
-          request,
-          response
-        );
+      const sentinelError =
+        caughtError ?? new HttpError(`HTTP ${response!.status} from ${request.url}`, request, response);
 
-        if (this.shouldRetry(sentinelError, response, attempt)) {
-          // Throwing here triggers the retry executor's next attempt.
-          throw sentinelError;
-        }
+      if (this.shouldRetry(sentinelError, response, attempt)) {
+        // Throwing here triggers the retry executor's next attempt.
+        throw sentinelError;
+      }
 
-        if (caughtError) {
-          // Non-retryable transport error — surface it to the caller.
-          throw caughtError;
-        }
+      if (caughtError) {
+        // Non-retryable transport error — surface it to the caller.
+        throw caughtError;
+      }
 
-        successResponse = response;
-        return response;
-      },
-      retryOptions
-    );
+      successResponse = response;
+      return response;
+    }, retryOptions);
 
     return successResponse!;
   }

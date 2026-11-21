@@ -3,7 +3,7 @@ import type { KvStore } from "../../src/utils/KvStore";
 
 export const runKvStoreContract = (
   description: string,
-  makeStore: () => Promise<KvStore<string>> | KvStore<string>
+  makeStore: () => Promise<KvStore<string>> | KvStore<string>,
 ): void => {
   describe(`KvStore contract — ${description}`, () => {
     let store: KvStore<string>;

@@ -7,8 +7,16 @@ describe("CircuitBreaker", () => {
     const timer = new FakeTimer();
     const breaker = new CircuitBreaker({ failureThreshold: 2, resetTimeoutMs: 100, timer });
 
-    await expect(breaker.execute(async () => { throw new Error("first"); })).rejects.toThrow(/first/);
-    await expect(breaker.execute(async () => { throw new Error("second"); })).rejects.toThrow(/second/);
+    await expect(
+      breaker.execute(async () => {
+        throw new Error("first");
+      }),
+    ).rejects.toThrow(/first/);
+    await expect(
+      breaker.execute(async () => {
+        throw new Error("second");
+      }),
+    ).rejects.toThrow(/second/);
 
     expect(breaker.state()).toBe("open");
     await expect(breaker.execute(async () => "blocked")).rejects.toBeInstanceOf(CircuitBreakerOpenError);
@@ -18,7 +26,11 @@ describe("CircuitBreaker", () => {
     const timer = new FakeTimer();
     const breaker = new CircuitBreaker({ failureThreshold: 1, resetTimeoutMs: 100, timer });
 
-    await expect(breaker.execute(async () => { throw new Error("boom"); })).rejects.toThrow(/boom/);
+    await expect(
+      breaker.execute(async () => {
+        throw new Error("boom");
+      }),
+    ).rejects.toThrow(/boom/);
     timer.advanceTime(100);
 
     expect(breaker.state()).toBe("halfOpen");
@@ -30,9 +42,17 @@ describe("CircuitBreaker", () => {
     const timer = new FakeTimer();
     const breaker = new CircuitBreaker({ failureThreshold: 1, resetTimeoutMs: 100, timer });
 
-    await expect(breaker.execute(async () => { throw new Error("boom"); })).rejects.toThrow(/boom/);
+    await expect(
+      breaker.execute(async () => {
+        throw new Error("boom");
+      }),
+    ).rejects.toThrow(/boom/);
     timer.advanceTime(100);
-    await expect(breaker.execute(async () => { throw new Error("probe"); })).rejects.toThrow(/probe/);
+    await expect(
+      breaker.execute(async () => {
+        throw new Error("probe");
+      }),
+    ).rejects.toThrow(/probe/);
 
     expect(breaker.state()).toBe("open");
   });

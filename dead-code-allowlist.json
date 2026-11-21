@@ -28,10 +28,6 @@
     "src/utils/installErrorHandlers.ts",
     "test/fakes/FakeWebSocketPair.ts"
   ],
-  "ignorePathPatterns": [
-    "^test/contracts/",
-    "^test/fixtures/",
-    "^examples/"
-  ],
+  "ignorePathPatterns": ["^test/contracts/", "^test/fixtures/", "^examples/"],
   "ignoreEntries": []
 }

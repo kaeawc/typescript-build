@@ -48,8 +48,10 @@ export interface WebSocketClient<TRequest extends WsMessage, TResponse extends W
  *  - Optional auto-reconnect with exponential backoff via `RetryExecutor`
  *  - Pending requests are rejected on disconnect; they do not replay after reconnect
  */
-export class BunWebSocketClient<TRequest extends WsMessage, TResponse extends WsResponse>
-implements WebSocketClient<TRequest, TResponse> {
+export class BunWebSocketClient<TRequest extends WsMessage, TResponse extends WsResponse> implements WebSocketClient<
+  TRequest,
+  TResponse
+> {
   private readonly url: string;
   private readonly timeoutMs: number;
   private readonly autoReconnect: boolean;
@@ -97,12 +99,18 @@ implements WebSocketClient<TRequest, TResponse> {
     const id = message.id ?? this.requests.generateId(message.type);
     const envelope = { ...message, id };
 
-    const pending = this.requests.register<TResponse>(id, message.type, this.timeoutMs, (reqId, type, ms) => ({
-      id: reqId,
-      type,
-      success: false,
-      error: `Request '${type}' timed out after ${ms}ms`,
-    } as unknown as TResponse));
+    const pending = this.requests.register<TResponse>(
+      id,
+      message.type,
+      this.timeoutMs,
+      (reqId, type, ms) =>
+        ({
+          id: reqId,
+          type,
+          success: false,
+          error: `Request '${type}' timed out after ${ms}ms`,
+        }) as unknown as TResponse,
+    );
 
     this.socket.send(JSON.stringify(envelope));
     return pending;
@@ -148,7 +156,9 @@ implements WebSocketClient<TRequest, TResponse> {
       });
 
       socket.addEventListener("error", event => {
-        const error = new Error(`WebSocket error: ${String((event as unknown as { message?: string }).message ?? "unknown")}`);
+        const error = new Error(
+          `WebSocket error: ${String((event as unknown as { message?: string }).message ?? "unknown")}`,
+        );
         this.handlers.onError?.(error);
         if (!settled) {
           settled = true;
@@ -185,7 +195,7 @@ implements WebSocketClient<TRequest, TResponse> {
         maxAttempts: this.maxReconnectAttempts,
         delays: this.reconnectDelays,
         shouldRetry: () => this.shouldStayConnected,
-      }
+      },
     );
     if (!result.success && this.shouldStayConnected) {
       throw result.error ?? new Error("Reconnect failed");

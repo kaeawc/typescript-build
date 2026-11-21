@@ -33,10 +33,7 @@ export interface SocketClientOptions {
  * Multiple concurrent `request()` calls are supported; each is tracked via
  * `RequestManager` and rejected if the server doesn't reply within `timeoutMs`.
  */
-export class SocketClient<
-  TRequest extends SocketRequest,
-  TResponse extends SocketResponse,
-> {
+export class SocketClient<TRequest extends SocketRequest, TResponse extends SocketResponse> {
   private socket: Socket | null = null;
   private readonly socketPath: string;
   private readonly timeoutMs: number;
@@ -145,11 +142,17 @@ export class SocketClient<
     const id = request.id ?? this.requests.generateId("req");
     const envelope = { ...request, id };
 
-    const pending = this.requests.register<TResponse>(id, "req", this.timeoutMs, (reqId, _type, ms) => ({
-      id: reqId,
-      success: false,
-      error: `Request timed out after ${ms}ms`,
-    } as TResponse));
+    const pending = this.requests.register<TResponse>(
+      id,
+      "req",
+      this.timeoutMs,
+      (reqId, _type, ms) =>
+        ({
+          id: reqId,
+          success: false,
+          error: `Request timed out after ${ms}ms`,
+        }) as TResponse,
+    );
 
     if (!this.socket || this.socket.destroyed) {
       this.requests.reject(id, new SocketUnavailableError("Socket not connected"));

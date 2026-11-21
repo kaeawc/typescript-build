@@ -26,13 +26,15 @@ describe("TaskQueue", () => {
     let maxRunning = 0;
     const release: Array<() => void> = [];
 
-    const tasks = [1, 2, 3].map(value => queue.enqueue(async () => {
-      running += 1;
-      maxRunning = Math.max(maxRunning, running);
-      await new Promise<void>(resolve => release.push(resolve));
-      running -= 1;
-      return value;
-    }));
+    const tasks = [1, 2, 3].map(value =>
+      queue.enqueue(async () => {
+        running += 1;
+        maxRunning = Math.max(maxRunning, running);
+        await new Promise<void>(resolve => release.push(resolve));
+        running -= 1;
+        return value;
+      }),
+    );
 
     await Promise.resolve();
     expect(queue.stats()).toMatchObject({ queued: 1, running: 2 });

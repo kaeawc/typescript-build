@@ -1,7 +1,7 @@
 # Contract tests
 
 A **contract test** asserts the shared behavior every implementation of an
-interface must provide. It runs against *every* implementation — real and
+interface must provide. It runs against _every_ implementation — real and
 fake — so the fake can never drift away from the real.
 
 The pattern: each contract is a function that takes a factory for an
@@ -37,8 +37,8 @@ runTimerContract("FakeTimer (auto-advance)", () => {
 
 ## Why this matters
 
-The interface/real/fake pattern is only valuable if the fake *actually
-behaves like* the real. Without a contract test, the fake and real can drift
+The interface/real/fake pattern is only valuable if the fake _actually
+behaves like_ the real. Without a contract test, the fake and real can drift
 silently: the fake subtly relaxes a guarantee the real provides, tests pass
 against the fake, and production breaks against the real. Contract tests
 catch that class of bug at commit time.

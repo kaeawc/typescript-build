@@ -16,11 +16,7 @@ describe("YamlSerializer — properties", () => {
     // A recursive generator for "things YAML can safely round-trip": scalars,
     // arrays, and plain records. No dates, no cyclic refs, no Symbols.
     const jsonValue = fc.letrec(tie => ({
-      scalar: fc.oneof(
-        fc.string({ maxLength: 20 }),
-        fc.integer({ min: -1000, max: 1000 }),
-        fc.boolean(),
-      ),
+      scalar: fc.oneof(fc.string({ maxLength: 20 }), fc.integer({ min: -1000, max: 1000 }), fc.boolean()),
       value: fc.oneof(
         { maxDepth: 3 },
         tie("scalar"),
@@ -28,7 +24,7 @@ describe("YamlSerializer — properties", () => {
         fc.dictionary(
           fc.string({ minLength: 1, maxLength: 6 }).filter(s => !/^\s/.test(s)),
           tie("value"),
-          { maxKeys: 4 }
+          { maxKeys: 4 },
         ),
       ),
     })).value;
@@ -40,7 +36,7 @@ describe("YamlSerializer — properties", () => {
         expect(parsed.error).toBeUndefined();
         expect(parsed.value).toEqual(value);
       }),
-      { numRuns: 50 }
+      { numRuns: 50 },
     );
   });
 });

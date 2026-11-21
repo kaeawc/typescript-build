@@ -25,9 +25,21 @@ export class FakeChildProcess extends EventEmitter {
 
   constructor() {
     super();
-    this.stdout = new Readable({ read() { /* push data manually */ } });
-    this.stderr = new Readable({ read() { /* push data manually */ } });
-    this.stdin = new Writable({ write(chunk, encoding, callback) { callback(); } });
+    this.stdout = new Readable({
+      read() {
+        /* push data manually */
+      },
+    });
+    this.stderr = new Readable({
+      read() {
+        /* push data manually */
+      },
+    });
+    this.stdin = new Writable({
+      write(chunk, encoding, callback) {
+        callback();
+      },
+    });
     this.pid = Math.floor(Math.random() * 10000) + 1000;
   }
 

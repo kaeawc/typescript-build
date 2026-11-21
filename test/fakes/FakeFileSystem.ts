@@ -102,7 +102,9 @@ export class FakeFileSystem implements FileSystem {
       return this.existsSync_shouldExist.get(normalizedPath) ?? false;
     }
 
-    return this.files.has(normalizedPath) || this.binaryFiles.has(normalizedPath) || this.directories.has(normalizedPath);
+    return (
+      this.files.has(normalizedPath) || this.binaryFiles.has(normalizedPath) || this.directories.has(normalizedPath)
+    );
   }
 
   async pathExists(filePath: string): Promise<boolean> {

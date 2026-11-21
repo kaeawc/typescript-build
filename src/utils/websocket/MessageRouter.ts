@@ -8,7 +8,7 @@ export type MessageHandler<
   TMessage extends WsMessage,
   TType extends TMessage["type"],
   TContext = void,
-  TResult = void
+  TResult = void,
 > = (message: Extract<TMessage, { type: TType }>, context: TContext) => TResult | Promise<TResult>;
 
 /**
@@ -26,25 +26,12 @@ export type MessageHandler<
  * await router.dispatch(incoming, socket);
  * ```
  */
-export class MessageRouter<
-  TMessage extends WsMessage,
-  TContext = void,
-  TResult = void
-> {
-  private readonly handlers: Map<
-    string,
-    MessageHandler<TMessage, TMessage["type"], TContext, TResult>
-  > = new Map();
+export class MessageRouter<TMessage extends WsMessage, TContext = void, TResult = void> {
+  private readonly handlers: Map<string, MessageHandler<TMessage, TMessage["type"], TContext, TResult>> = new Map();
   private fallback: ((message: TMessage, context: TContext) => TResult | Promise<TResult>) | undefined;
 
-  on<TType extends TMessage["type"]>(
-    type: TType,
-    handler: MessageHandler<TMessage, TType, TContext, TResult>
-  ): this {
-    this.handlers.set(
-      type,
-      handler as unknown as MessageHandler<TMessage, TMessage["type"], TContext, TResult>
-    );
+  on<TType extends TMessage["type"]>(type: TType, handler: MessageHandler<TMessage, TType, TContext, TResult>): this {
+    this.handlers.set(type, handler as unknown as MessageHandler<TMessage, TMessage["type"], TContext, TResult>);
     return this;
   }
 

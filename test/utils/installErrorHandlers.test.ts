@@ -29,7 +29,9 @@ describe("installErrorHandlers", () => {
 
     uninstall = installErrorHandlers({
       logger,
-      onUncaught: error => { captured = error; },
+      onUncaught: error => {
+        captured = error;
+      },
     });
 
     process.emit("uncaughtException", new Error("boom"));
@@ -46,7 +48,9 @@ describe("installErrorHandlers", () => {
 
     uninstall = installErrorHandlers({
       logger,
-      onUncaught: error => { captured = error; },
+      onUncaught: error => {
+        captured = error;
+      },
     });
 
     process.emit("unhandledRejection", new Error("reject"), Promise.resolve());
@@ -62,7 +66,9 @@ describe("installErrorHandlers", () => {
 
     uninstall = installErrorHandlers({
       logger,
-      onUncaught: () => { calls += 1; },
+      onUncaught: () => {
+        calls += 1;
+      },
     });
     uninstall();
     uninstall = null;

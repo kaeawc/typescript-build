@@ -70,9 +70,7 @@ export class InMemoryKvStore<V> implements KvStore<V> {
 
   async set(key: string, value: V, ttlMs?: number): Promise<void> {
     const effectiveTtl = ttlMs ?? this.defaultTtlMs;
-    const expiresAt = effectiveTtl === null || effectiveTtl === undefined
-      ? null
-      : this.timer.now() + effectiveTtl;
+    const expiresAt = effectiveTtl === null || effectiveTtl === undefined ? null : this.timer.now() + effectiveTtl;
     this.entries.set(key, { value, expiresAt });
   }
 

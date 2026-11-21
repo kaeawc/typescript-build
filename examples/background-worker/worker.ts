@@ -18,7 +18,7 @@ export class WorkFailed extends TaggedError<"WorkFailed"> {
   constructor(
     readonly itemId: string,
     message: string,
-    cause?: unknown
+    cause?: unknown,
   ) {
     super("WorkFailed", message, { cause });
   }
@@ -39,26 +39,28 @@ export const buildWorkerDeps = (options: { concurrency?: number } = {}): WorkerD
 export const processWorkItems = async (
   items: readonly WorkItem[],
   handler: (item: WorkItem, attempt: number) => Promise<void>,
-  deps: WorkerDeps = buildWorkerDeps()
+  deps: WorkerDeps = buildWorkerDeps(),
 ): Promise<Array<Result<WorkResult, WorkFailed>>> => {
-  const scheduled = items.map(item => deps.queue.enqueue(async (): Promise<Result<WorkResult, WorkFailed>> => {
-    try {
-      let attempts = 0;
-      await deps.retry.executeOrThrow(
-        async attempt => {
-          attempts = attempt;
-          await handler(item, attempt);
-        },
-        { maxAttempts: 3, delays: [10, 25] }
-      );
-      deps.logger.info("work item processed", { id: item.id, attempts });
-      return ok({ id: item.id, attempts });
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      deps.logger.warn("work item failed", { id: item.id, message });
-      return err(new WorkFailed(item.id, message, error));
-    }
-  }));
+  const scheduled = items.map(item =>
+    deps.queue.enqueue(async (): Promise<Result<WorkResult, WorkFailed>> => {
+      try {
+        let attempts = 0;
+        await deps.retry.executeOrThrow(
+          async attempt => {
+            attempts = attempt;
+            await handler(item, attempt);
+          },
+          { maxAttempts: 3, delays: [10, 25] },
+        );
+        deps.logger.info("work item processed", { id: item.id, attempts });
+        return ok({ id: item.id, attempts });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        deps.logger.warn("work item failed", { id: item.id, message });
+        return err(new WorkFailed(item.id, message, error));
+      }
+    }),
+  );
 
   const results = await Promise.all(scheduled);
   await deps.queue.drain();

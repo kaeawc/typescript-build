@@ -19,7 +19,7 @@ export interface ErrorHandlerOptions {
  *
  * Returns a function that removes the handlers again (for tests).
  */
-export const installErrorHandlers = (options: ErrorHandlerOptions): () => void => {
+export const installErrorHandlers = (options: ErrorHandlerOptions): (() => void) => {
   const onUncaught = options.onUncaught ?? defaultOnUncaught;
 
   const handleUncaught = (error: unknown): void => {

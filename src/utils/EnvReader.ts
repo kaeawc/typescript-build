@@ -78,10 +78,14 @@ export class ProcessEnvReader implements EnvReader {
       return defaultValue;
     }
     const lowered = raw.toLowerCase();
-    if (TRUTHY.has(lowered)) { return true; }
-    if (FALSY.has(lowered)) { return false; }
+    if (TRUTHY.has(lowered)) {
+      return true;
+    }
+    if (FALSY.has(lowered)) {
+      return false;
+    }
     throw new EnvError(
-      `Environment variable ${name} must be a boolean (one of ${[...TRUTHY, ...FALSY].join(", ")}), got ${JSON.stringify(raw)}`
+      `Environment variable ${name} must be a boolean (one of ${[...TRUTHY, ...FALSY].join(", ")}), got ${JSON.stringify(raw)}`,
     );
   }
 
@@ -94,7 +98,7 @@ export class ProcessEnvReader implements EnvReader {
     }
     if (!allowed.includes(raw as T)) {
       throw new EnvError(
-        `Environment variable ${name} must be one of: ${allowed.join(", ")}. Got ${JSON.stringify(raw)}`
+        `Environment variable ${name} must be one of: ${allowed.join(", ")}. Got ${JSON.stringify(raw)}`,
       );
     }
     return raw as T;

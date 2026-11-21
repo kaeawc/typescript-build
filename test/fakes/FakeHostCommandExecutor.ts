@@ -37,11 +37,7 @@ export class FakeHostCommandExecutor implements HostCommandExecutor {
     return this.getExecutedCommands().some(command => command.includes(pattern));
   }
 
-  async executeCommand(
-    command: string,
-    args: string[] = [],
-    _options?: HostCommandOptions
-  ): Promise<ExecResult> {
+  async executeCommand(command: string, args: string[] = [], _options?: HostCommandOptions): Promise<ExecResult> {
     this.executedCommands.push({ command, args });
 
     const commandString = [command, ...args].join(" ");
@@ -63,7 +59,10 @@ export class FakeHostCommandExecutor implements HostCommandExecutor {
       stderr,
       toString: typeof response.toString === "function" ? response.toString.bind(response) : () => stdout,
       trim: typeof response.trim === "function" ? response.trim.bind(response) : () => stdout.trim(),
-      includes: typeof response.includes === "function" ? response.includes.bind(response) : (searchString: string) => stdout.includes(searchString),
+      includes:
+        typeof response.includes === "function"
+          ? response.includes.bind(response)
+          : (searchString: string) => stdout.includes(searchString),
     };
   }
 }

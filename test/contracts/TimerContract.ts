@@ -9,7 +9,7 @@ export interface TimerContractCapabilities {
 export const runTimerContract = (
   description: string,
   makeTimer: () => Timer,
-  capabilities: TimerContractCapabilities
+  capabilities: TimerContractCapabilities,
 ): void => {
   describe(`Timer contract — ${description}`, () => {
     test("now() returns a non-negative number", () => {
@@ -36,7 +36,9 @@ export const runTimerContract = (
     test("setTimeout + clearTimeout does not fire", async () => {
       const timer = makeTimer();
       let fired = false;
-      const handle = timer.setTimeout(() => { fired = true; }, 1);
+      const handle = timer.setTimeout(() => {
+        fired = true;
+      }, 1);
       timer.clearTimeout(handle);
 
       if (capabilities.realTime) {

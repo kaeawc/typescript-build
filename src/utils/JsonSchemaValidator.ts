@@ -161,5 +161,4 @@ const findLineNumber = (source: string, fieldPath: string): { line: number; colu
   return undefined;
 };
 
-const escapeRegex = (value: string): string =>
-  value.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
+const escapeRegex = (value: string): string => value.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
