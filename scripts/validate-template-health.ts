@@ -26,7 +26,9 @@ const turbo = readJson<TurboJson>("turbo.json");
 
 const requiredScripts = [
   "typecheck",
+  "lint",
   "lint:types",
+  "format:check",
   "types:emit",
   "coverage:check",
   "package:quality",
@@ -54,12 +56,21 @@ if (!bunVersion) {
   fail("packageManager must pin Bun as bun@<version>");
 }
 
+// CI reads the Bun version straight from package.json#packageManager, so the
+// pin lives in one place. The Docker image tag is the one copy that can drift.
 const setupAction = readFileSync(".github/actions/setup-bun-turbo/action.yml", "utf8");
-const actionVersion = setupAction.match(/default: "([^"]+)"/)?.[1];
-if (bunVersion && actionVersion !== bunVersion) {
-  fail(
-    `Bun version mismatch: packageManager uses ${bunVersion}, setup-bun-turbo default uses ${actionVersion ?? "unknown"}`,
-  );
+if (
+  !/bun-version-file:\s*\$\{\{\s*inputs\.bun-version-file\s*\}\}/.test(setupAction) ||
+  !/default: "package\.json"/.test(setupAction)
+) {
+  fail("setup-bun-turbo must install Bun via bun-version-file (default package.json) so CI matches packageManager");
+}
+
+const dockerfile = readFileSync("ci/Dockerfile", "utf8");
+for (const [, imageVersion] of dockerfile.matchAll(/^FROM oven\/bun:([0-9][^\s-]*)/gm)) {
+  if (bunVersion && imageVersion !== bunVersion) {
+    fail(`Bun version mismatch: packageManager uses ${bunVersion}, ci/Dockerfile uses oven/bun:${imageVersion}`);
+  }
 }
 
 const readme = readFileSync("README.md", "utf8");

@@ -22,14 +22,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Git Checkout"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           lfs: false
-
-      - name: "Install jq"
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
 
       - uses: ./.github/actions/setup-bun-turbo
 
@@ -37,11 +32,15 @@ jobs:
         run: |
           mkdir -p reports
           THRESHOLD=${{ github.event.inputs.threshold || '10' }}
-          bash scripts/detect-dead-code-ts.sh --output-dir=reports --threshold="$THRESHOLD" || echo "FAILED=true" >> "$GITHUB_ENV"
+          bun run dead-code:ts -- --max-issues="$THRESHOLD" \
+            --reporter symbols \
+            --reporter json --output-file json=reports/dead-code-report.json \
+            --reporter markdown --output-file markdown=reports/dead-code-report.md \
+            || echo "FAILED=true" >> "$GITHUB_ENV"
           exit 0
 
       - name: "Upload Dead Code Report (JSON)"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: dead-code-report-json
@@ -49,7 +48,7 @@ jobs:
           retention-days: 90
 
       - name: "Upload Dead Code Report (Markdown)"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: dead-code-report-markdown
