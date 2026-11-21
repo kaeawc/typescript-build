@@ -1,13 +1,16 @@
 {
-  "$schema": "https://unpkg.com/knip@latest/schema.json",
-  "entry": ["src/index.ts", "test/**/*.ts", "scripts/**/*.ts"],
-  "project": ["src/**/*.ts", "test/**/*.ts", "scripts/**/*.ts"],
-  "ignore": [],
-  "ignoreDependencies": ["ts-prune"],
-  "ignoreBinaries": [],
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": ["src/index.ts", "build.ts", "scripts/**/*.ts", "test/**/*.test.ts", "examples/**/*.ts"],
+  "project": ["src/**/*.ts", "test/**/*.ts", "scripts/**/*.ts", "examples/**/*.ts"],
   "ignoreExportsUsedInFile": true,
   "includeEntryExports": true,
-  "typescript": {
-    "config": "tsconfig.dead-code.json"
+  "ignoreDependencies": ["@arethetypeswrong/cli", "publint"],
+  "ignoreIssues": {
+    "src/index.ts": ["exports", "types"],
+    "src/composition.ts": ["files", "exports", "types"],
+    "src/utils/**": ["exports", "types"],
+    "test/contracts/**": ["exports", "types"],
+    "test/fixtures/**": ["files", "exports", "types"],
+    "examples/**": ["exports", "types"]
   }
 }

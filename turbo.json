@@ -2,10 +2,10 @@
   "$schema": "https://turborepo.dev/schema.json",
   "ui": "stream",
   "envMode": "strict",
-  "globalDependencies": ["tsconfig.json"],
+  "globalDependencies": ["tsconfig.json", "bunfig.toml"],
   "tasks": {
     "typecheck": {
-      "description": "Run full TypeScript semantic checks across source, tests, scripts, and examples",
+      "description": "Run TypeScript 7 (native tsc) semantic checks across source, tests, scripts, and examples",
       "inputs": [
         "src/**",
         "test/**",
@@ -13,7 +13,6 @@
         "examples/**/*.ts",
         "build.ts",
         "tsconfig.json",
-        "tsconfig.typecheck.json",
         "package.json"
       ],
       "outputs": [],
@@ -29,32 +28,36 @@
         "scripts/patch-declaration-imports.ts",
         "package.json",
         "tsconfig.json",
-        "tsconfig.declarations.json",
-        "tsconfig.typecheck.json"
+        "tsconfig.declarations.json"
       ],
       "outputLogs": "new-only",
       "passThroughEnv": ["CI", "GITHUB_ACTIONS"]
     },
     "lint": {
-      "description": "Run ESLint with auto-fix on source and test files",
-      "inputs": ["src/**", "test/**", "scripts/**/*.ts", "eslint.config.mjs"],
+      "description": "Run oxlint (syntax-level rules + template plugin)",
+      "inputs": ["src/**", "test/**", "scripts/**/*.ts", "examples/**/*.ts", "build.ts", ".oxlintrc.json"],
       "outputs": [],
       "outputLogs": "new-only",
       "passThroughEnv": ["CI", "GITHUB_ACTIONS"]
     },
     "lint:types": {
-      "description": "Run type-aware ESLint rules",
+      "description": "Run oxlint with type-aware rules (tsgolint on the TypeScript 7 checker)",
       "inputs": [
         "src/**",
         "test/**",
         "scripts/**/*.ts",
         "examples/**/*.ts",
         "build.ts",
-        "eslint.config.mjs",
-        "eslint.typechecked.config.mjs",
-        "tsconfig.json",
-        "tsconfig.typecheck.json"
+        ".oxlintrc.json",
+        "tsconfig.json"
       ],
+      "outputs": [],
+      "outputLogs": "new-only",
+      "passThroughEnv": ["CI", "GITHUB_ACTIONS"]
+    },
+    "format:check": {
+      "description": "Check formatting with oxfmt",
+      "inputs": ["$TURBO_DEFAULT$", ".oxfmtrc.json"],
       "outputs": [],
       "outputLogs": "new-only",
       "passThroughEnv": ["CI", "GITHUB_ACTIONS"]
@@ -95,8 +98,7 @@
         "scripts/patch-declaration-imports.ts",
         "scripts/validate-package-quality.sh",
         "package.json",
-        "tsconfig.declarations.json",
-        "tsconfig.typecheck.json"
+        "tsconfig.declarations.json"
       ],
       "outputs": [],
       "outputLogs": "new-only",

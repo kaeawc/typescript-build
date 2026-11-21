@@ -1,3 +1,9 @@
 [test]
 coverageReporter = ["text", "lcov"]
 coverageDir = "./coverage"
+
+[run]
+# Run package binaries (oxlint, oxfmt, tsc, knip, turbo, ...) on Bun even when
+# their shebang says `node`: faster startup, and no dependency on whichever
+# Node version happens to be on PATH.
+bun = true
