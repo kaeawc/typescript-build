@@ -1,9 +1,11 @@
 {
   "recommendations": [
-    "dbaeumer.vscode-eslint",
+    "oxc.oxc-vscode",
+    "TypeScriptTeam.native-preview",
     "oven.bun-vscode",
     "editorconfig.editorconfig",
     "exiasr.hadolint",
     "timonwong.shellcheck"
-  ]
+  ],
+  "unwantedRecommendations": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"]
 }

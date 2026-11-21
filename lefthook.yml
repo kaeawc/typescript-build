@@ -11,10 +11,19 @@
 pre-commit:
   parallel: true
   jobs:
-    - name: eslint
-      glob: "*.{ts,mts,cts,mjs,cjs,js}"
-      run: bunx eslint --fix {staged_files}
-      stage_fixed: true
+    # Lint-fix then format, in order, so the two never race on the same file.
+    - name: oxc
+      group:
+        piped: true
+        jobs:
+          - name: oxlint
+            glob: "*.{ts,mts,cts,mjs,cjs,js}"
+            run: bun run lint:fix {staged_files}
+            stage_fixed: true
+          - name: oxfmt
+            glob: "*.{ts,mts,cts,mjs,cjs,js,json,jsonc,md,yml,yaml}"
+            run: bun run format --no-error-on-unmatched-pattern {staged_files}
+            stage_fixed: true
       skip:
         - ref: ci
 
