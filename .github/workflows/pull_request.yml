@@ -139,7 +139,7 @@ jobs:
 
       - name: "Upload Build/Test Logs"
         if: needs.detect-changes.outputs.docs_only != 'true' && (failure() || cancelled())
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: turbo-validate-logs-${{ matrix.os }}
           path: ci-logs/*.log
@@ -180,7 +180,7 @@ jobs:
           echo "Coverage file size: $(wc -c < coverage/lcov.info) bytes"
 
       - name: "Upload Coverage"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: ts-code-coverage
@@ -188,7 +188,7 @@ jobs:
           retention-days: 7
 
       - name: "Upload Coverage Threshold Report"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: ts-code-coverage-thresholds
@@ -275,7 +275,7 @@ jobs:
           bun run dead-code:ts -- --output-dir=reports
 
       - name: "Upload Dead Code Report"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: dead-code-report
@@ -313,7 +313,7 @@ jobs:
           exit 0
 
       - name: "Upload Benchmark Report"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: npm-unpacked-size-report
@@ -350,7 +350,7 @@ jobs:
         run: bun run package:quality
 
       - name: "Upload Package Quality Logs"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: package-quality-logs
@@ -390,7 +390,7 @@ jobs:
         run: bun run benchmark:perf -- --output reports/performance.json
 
       - name: "Upload Performance Report"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: performance-report
