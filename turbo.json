@@ -13,7 +13,8 @@
         "examples/**/*.ts",
         "build.ts",
         "tsconfig.json",
-        "package.json"
+        "package.json",
+        "tsconfig.view.json"
       ],
       "outputs": [],
       "outputLogs": "new-only",
@@ -49,7 +50,8 @@
         "examples/**/*.ts",
         "build.ts",
         ".oxlintrc.json",
-        "tsconfig.json"
+        "tsconfig.json",
+        "tsconfig.view.json"
       ],
       "outputs": [],
       "outputLogs": "new-only",

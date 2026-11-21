@@ -6,7 +6,8 @@ exports[`CLI help text (snapshot) --help output is stable 1`] = `
 Commands:
   greet <name>        Print a greeting for <name>
   version             Print the package version
-  serve [--port N]    Start the HTTP server (default port 8080)
+  serve [--port N]    Start the HTTP server (default port 8080), MCP at /mcp
+  mcp                 Serve the notes MCP server over stdio
   help                Show this message
 
 Options:

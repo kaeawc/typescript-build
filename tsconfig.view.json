@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  // Browser-side MCP App views: same strictness, plus the DOM lib. They are
+  // bundled into the server by src/mcp/apps/bundleView.ts, never run on Bun.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "types": []
+  },
+  "include": ["src/mcp/apps/view/**/*.ts"],
+  "exclude": []
+}

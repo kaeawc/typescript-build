@@ -1,6 +1,6 @@
 import { run } from "./cli";
 import { loadConfig, ConfigError } from "./config";
-import { Logger } from "./logger";
+import { Logger, stderrSink } from "./logger";
 import { installErrorHandlers } from "./utils/installErrorHandlers";
 
 export { run } from "./cli";
@@ -21,7 +21,9 @@ export const main = async (argv: readonly string[], env: NodeJS.ProcessEnv = pro
     throw error;
   }
 
-  const logger = new Logger({ level: config.logLevel });
+  // `mcp` speaks JSON-RPC on stdout, so its logs must go to stderr.
+  const command = argv.find(arg => !arg.startsWith("-"));
+  const logger = new Logger({ level: config.logLevel, ...(command === "mcp" ? { sink: stderrSink } : {}) });
   const uninstall = installErrorHandlers({ logger });
   try {
     const result = await run(argv, { config, logger });

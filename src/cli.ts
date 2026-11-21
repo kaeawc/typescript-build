@@ -9,7 +9,9 @@ export interface CliDeps {
   config: AppConfig;
   logger: Logger;
   /** Optional server factory for `serve`. Tests inject a fake. */
-  createServer?: () => HttpServer;
+  createServer?: () => HttpServer | Promise<HttpServer>;
+  /** Optional stdio MCP starter for `mcp`. Tests inject a fake. */
+  startMcpStdio?: () => Promise<{ close(): Promise<void> }>;
   /** Resolves when the server should shut down. Default: real SIGINT/SIGTERM. */
   waitForShutdown?: () => Promise<void>;
 }
@@ -23,7 +25,8 @@ const USAGE = `Usage: typescript-build <command> [options]
 Commands:
   greet <name>        Print a greeting for <name>
   version             Print the package version
-  serve [--port N]    Start the HTTP server (default port 8080)
+  serve [--port N]    Start the HTTP server (default port 8080), MCP at /mcp
+  mcp                 Serve the notes MCP server over stdio
   help                Show this message
 
 Options:
@@ -55,6 +58,8 @@ export const run = async (argv: readonly string[], deps: CliDeps): Promise<CliRe
       return runVersion(deps);
     case "serve":
       return runServe(values.port as string | undefined, deps);
+    case "mcp":
+      return runMcp(deps);
     case "help":
       process.stdout.write(USAGE);
       return { exitCode: 0 };
@@ -77,8 +82,10 @@ const runGreet = (args: readonly string[], deps: CliDeps): CliResult => {
   return { exitCode: 0 };
 };
 
+const packageVersion = (): string => process.env["npm_package_version"] ?? "0.0.0";
+
 const runVersion = (deps: CliDeps): CliResult => {
-  const version = process.env["npm_package_version"] ?? "0.0.0";
+  const version = packageVersion();
   deps.logger.debug("version", { version });
   process.stdout.write(`${version}\n`);
   return { exitCode: 0 };
@@ -91,7 +98,7 @@ const runServe = async (portArg: string | undefined, deps: CliDeps): Promise<Cli
     return { exitCode: 2 };
   }
 
-  const server = (deps.createServer ?? defaultServerFactory(deps.config.greeting))();
+  const server = await (deps.createServer ?? defaultServerFactory(deps.config.greeting))();
 
   try {
     await server.start(port);
@@ -116,9 +123,15 @@ const runServe = async (portArg: string | undefined, deps: CliDeps): Promise<Cli
 };
 
 const defaultServerFactory =
-  (greeting: string): (() => HttpServer) =>
-  () =>
-    createHonoServer({
+  (greeting: string): (() => Promise<HttpServer>) =>
+  async () => {
+    // Loaded lazily so commands that don't serve MCP keep a fast cold start.
+    const [{ createNotesMcpDeps }, { createNotesMcpHttp }] = await Promise.all([
+      import("./mcp/defaults"),
+      import("./mcp/http"),
+    ]);
+    const mcp = createNotesMcpHttp(await createNotesMcpDeps({ version: packageVersion() }));
+    return createHonoServer({
       handlers: [
         {
           method: "GET",
@@ -129,8 +142,40 @@ const defaultServerFactory =
             return jsonResponse({ greeting: `${greeting}, ${name}!` });
           },
         },
+        ...mcp.routes,
       ],
     });
+  };
+
+const startDefaultMcpStdio = async (): Promise<{ close(): Promise<void> }> => {
+  const [{ createNotesMcpDeps }, { serveNotesStdio }] = await Promise.all([
+    import("./mcp/defaults"),
+    import("./mcp/stdio"),
+  ]);
+  return serveNotesStdio(await createNotesMcpDeps({ version: packageVersion(), exportStepMs: 250 }));
+};
+
+const runMcp = async (deps: CliDeps): Promise<CliResult> => {
+  const handle = await (deps.startMcpStdio ?? startDefaultMcpStdio)();
+  deps.logger.info("mcp: serving on stdio");
+  try {
+    await (deps.waitForShutdown ?? waitForStdioShutdown)();
+  } finally {
+    await handle.close();
+    deps.logger.info("mcp: stopped");
+  }
+  return { exitCode: 0 };
+};
+
+/** A stdio server lives until its client closes stdin, or a signal arrives. */
+const waitForStdioShutdown = (): Promise<void> =>
+  Promise.race([
+    waitForSignalShutdown(),
+    new Promise<void>(resolve => {
+      process.stdin.once("end", resolve);
+      process.stdin.once("close", resolve);
+    }),
+  ]);
 
 const waitForSignalShutdown = (): Promise<void> =>
   new Promise<void>(resolve => {

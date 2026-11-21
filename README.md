@@ -72,9 +72,10 @@ src/                  application source (TypeScript, bundled by build.ts)
   cli.ts, index.ts      CLI entry and main()
   composition.ts        composition root: the one place real implementations are wired
   server/               HTTP server interface + Hono implementation
+  mcp/                  MCP server (SDK v2): features/, tasks/, notes/, apps/view/ (MCP App UI)
   utils/                reusable, injectable utilities (Timer, FileSystem, HttpClient, ...)
 test/                 bun:test suites mirroring src/, plus fakes/, contracts/, fixtures/
-examples/             small reference apps (CLI, HTTP service, WebSocket chat, API client)
+examples/             small reference apps (CLI, HTTP service, WebSocket chat, API client, MCP client)
 scripts/              validation, guardrails, benchmarks (see scripts/README.md)
   lint/template-plugin.ts  oxlint plugin: naming conventions + import boundaries
 docs/adr/             Architecture Decision Records
@@ -82,6 +83,7 @@ ci/Dockerfile         multi-stage Bun image
 build.ts              Bun bundler entry
 tsconfig.json         the single type-checking config (editor, tsc, tsgolint)
 tsconfig.declarations.json  .d.ts emit for the published package
+tsconfig.view.json    DOM-lib type checking for browser-side MCP App views
 .oxlintrc.json        lint rules, house rules, and layer boundaries
 .oxfmtrc.json         formatting options
 turbo.json            task graph and cache inputs
@@ -91,6 +93,32 @@ lefthook.yml          pre-commit (oxlint --fix, oxfmt), commit-msg, pre-push
 ```
 
 `AGENTS.md` (also available as `CLAUDE.md`) holds the rules coding agents follow in this repo. It is worth reading for humans too.
+
+## MCP server
+
+`src/mcp/` is a working [Model Context Protocol](https://modelcontextprotocol.io) server built on the TypeScript SDK v2 (`@modelcontextprotocol/server` 2.4). It speaks the **2026-07-28** protocol and still serves 2025-era clients. The example domain is a small notes app; replace it with your own.
+
+```bash
+bun run build
+bun dist/src/index.js serve        # Streamable HTTP at http://localhost:8080/mcp
+bun dist/src/index.js mcp          # stdio, for desktop hosts and agent CLIs
+bun examples/mcp-client/index.ts   # feature tour over stdio
+```
+
+| Feature                                                                                       | Where                                            |
+| --------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| Tools: structured output, annotations, resource links, `x-mcp-header`                         | `src/mcp/features/tools.ts`                      |
+| Resources: static index with cache hint, URI template with list and completion, subscriptions | `src/mcp/features/resources.ts`                  |
+| Prompts and argument completion (`completable`)                                               | `src/mcp/features/prompts.ts`                    |
+| Input required (in-band elicitation) with signed `requestState`                               | `delete_note` in `src/mcp/features/tools.ts`     |
+| Progress, cancellation, logging                                                               | `export_notes` in `src/mcp/features/tasks.ts`    |
+| Tasks extension (SEP-2663): task handles, `tasks/get`, `tasks/cancel`                         | `src/mcp/features/tasks.ts`, `src/mcp/tasks/`    |
+| Skills extension (SEP-2640)                                                                   | `src/mcp/features/skills.ts`                     |
+| MCP Apps (`ui://` view and app-only tool)                                                     | `src/mcp/features/apps.ts`, `src/mcp/apps/view/` |
+| `subscriptions/listen` notifications                                                          | `src/mcp/http.ts` (`handler.notify`)             |
+| Serving: HTTP (per request) and stdio                                                         | `src/mcp/http.ts`, `src/mcp/stdio.ts`            |
+
+Tests in `test/mcp/` drive the real handler in-process on both protocol eras. Design notes, SDK 2.4 limitations, and trade-offs are in [ADR-0008](docs/adr/0008-mcp-server-on-sdk-v2.md).
 
 ## House rules (enforced by lint)
 

@@ -1,6 +1,13 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  "entry": ["src/index.ts", "build.ts", "scripts/**/*.ts", "test/**/*.test.ts", "examples/**/*.ts"],
+  "entry": [
+    "src/index.ts",
+    "build.ts",
+    "scripts/**/*.ts",
+    "test/**/*.test.ts",
+    "examples/**/*.ts",
+    "src/mcp/apps/view/*.ts"
+  ],
   "project": ["src/**/*.ts", "test/**/*.ts", "scripts/**/*.ts", "examples/**/*.ts"],
   "ignoreExportsUsedInFile": true,
   "includeEntryExports": true,

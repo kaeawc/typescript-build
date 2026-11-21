@@ -11,5 +11,5 @@
     "stripInternal": true
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist", "coverage", "scratch", "test", "scripts", "examples"]
+  "exclude": ["node_modules", "dist", "coverage", "scratch", "test", "scripts", "examples", "src/mcp/apps/view"]
 }

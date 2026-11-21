@@ -49,6 +49,13 @@ src/                  Application source (TypeScript, compiled by build.ts)
   config.ts             Env-var config with hand-rolled validation
   index.ts              main(): glues config → logger → cli, installs error handlers
   logger.ts             Structured JSON Logger with injectable sink + clock
+  mcp/                  MCP server on SDK v2 (2026-07-28 + 2025 clients); see ADR-0008
+    createNotesServer.ts  Per-request/per-connection server factory
+    features/           One module per MCP feature (tools, resources, prompts, tasks, apps, skills)
+    tasks/              SEP-2663 TaskStore + TaskRunner (KvStore/Clock-backed)
+    notes/              Demo domain (NoteStore over KvStore)
+    apps/               MCP App view (browser TS, tsconfig.view.json) + bundleView macro
+    http.ts, stdio.ts   Serving entry points (createMcpHandler routes, serveStdio)
   server/
     HttpServer.ts       HttpServer interface + HttpRoute + jsonResponse helper
     HonoHttpServer.ts   Real impl over Hono (Bun.serve under the hood)
@@ -193,6 +200,14 @@ Inject them through constructors or function parameters; do not reach for global
   the CLI. Violations are lint errors. When you really need a new edge
   across layers, either (a) fix the architecture or (b) update the rules
   with a justification. See `docs/import-boundaries.md`.
+- **MCP server** — `src/mcp/` follows the 2026-07-28 model:
+  - Server instances are per request. Keep state in injected stores, never in
+    the server object.
+  - Ask the user with `inputRequired(...)`, not server-to-client requests.
+  - Publish changes through the notifier (`handler.notify` over HTTP).
+  - Add a feature as a new `src/mcp/features/*.ts` module, and test both eras
+    through `test/mcp/harness.ts`.
+  - Read ADR-0008 for the SDK 2.4 limitations before working around them.
 - **`Result<T, E>` + `TaggedError`** — prefer returning typed results over
   throwing for expected failure modes. See ADR-0006 for the rule of thumb.
 - **Examples as starting points** — `examples/cli-tool`, `examples/http-service`,
