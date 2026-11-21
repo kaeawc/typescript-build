@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 
 # Build stage: install deps and produce dist/ with the Bun native builder.
-FROM oven/bun:1.3.12-alpine AS builder
+FROM oven/bun:1.3.14-alpine AS builder
 
 WORKDIR /app
 
@@ -15,7 +15,7 @@ COPY src ./src
 RUN bun run build
 
 # Runtime stage: minimal Bun image with only the built artifacts.
-FROM oven/bun:1.3.12-alpine AS runtime
+FROM oven/bun:1.3.14-alpine AS runtime
 
 WORKDIR /app
 
