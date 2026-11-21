@@ -1,4 +1,5 @@
-import { createServer, Server as NetServer, Socket } from "node:net";
+import type { Server as NetServer, Socket } from "node:net";
+import { createServer } from "node:net";
 import { existsSync } from "node:fs";
 import { unlink, mkdir } from "node:fs/promises";
 import path from "node:path";

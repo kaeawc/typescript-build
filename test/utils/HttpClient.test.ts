@@ -9,7 +9,7 @@ describe("NodeHttpClient", () => {
     let seenHeaders: Record<string, string> | undefined;
 
     const fakeFetch = (async (input, init) => {
-      seenUrl = typeof input === "string" ? input : input.toString();
+      seenUrl = typeof input === "string" ? input : input instanceof Request ? input.url : input.href;
       seenMethod = init?.method;
       seenHeaders = init?.headers as Record<string, string>;
       return new Response(JSON.stringify({ value: 42 }), {

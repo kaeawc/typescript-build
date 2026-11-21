@@ -1,5 +1,5 @@
 import path from "node:path";
-import { FileSystem } from "./filesystem/DefaultFileSystem";
+import type { FileSystem } from "./filesystem/DefaultFileSystem";
 
 export class PathTraversalError extends Error {
   constructor(readonly root: string, readonly requestedPath: string) {

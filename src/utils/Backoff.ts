@@ -1,4 +1,4 @@
-import { Random } from "./Random";
+import type { Random } from "./Random";
 
 export interface BackoffPolicy {
   delayForAttempt(attempt: number): number;

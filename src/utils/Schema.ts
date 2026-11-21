@@ -1,6 +1,7 @@
-import { type Schema } from "ajv";
+import type { Schema } from "ajv";
 import { JsonSchemaValidator, type ValidationError } from "./JsonSchemaValidator";
-import { Result, err, ok } from "./Result";
+import type { Result } from "./Result";
+import { err, ok } from "./Result";
 
 export interface JsonParseError {
   readonly message: string;

@@ -1,0 +1,113 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  // oxlint: correctness rules, the template's house rules, and (with
+  // `--type-aware`, via oxlint-tsgolint on the TypeScript 7 checker) promise
+  // safety. Formatting is oxfmt's job (.oxfmtrc.json), not the linter's.
+  "plugins": ["typescript", "unicorn", "oxc", "import", "promise"],
+  "jsPlugins": ["./scripts/lint/template-plugin.ts"],
+  "categories": {
+    "correctness": "error"
+  },
+  "env": {
+    "builtin": true,
+    "node": true
+  },
+  "ignorePatterns": ["dist/**", "coverage/**", "scratch/**", ".turbo/**", "**/*.d.ts"],
+  "rules": {
+    // TypeScript
+    "no-unused-vars": ["error", { "args": "none", "caughtErrors": "none" }],
+    "typescript/consistent-type-imports": [
+      "error",
+      { "fixStyle": "separate-type-imports", "disallowTypeAnnotations": false }
+    ],
+    "typescript/no-import-type-side-effects": "error",
+
+    // Correctness and clarity
+    "eqeqeq": "error",
+    "accessor-pairs": ["error", { "getWithoutSet": false, "setWithoutGet": false }],
+    "curly": ["error", "all"],
+    "prefer-const": "error",
+    "no-var": "error",
+    "no-with": "error",
+    "no-multi-str": "error",
+    "no-caller": "error",
+    "no-implied-eval": "error",
+    "no-labels": "error",
+    "no-object-constructor": "error",
+    "no-self-compare": "error",
+    "no-shadow-restricted-names": "error",
+    "no-cond-assign": "error",
+    "no-implicit-globals": "error",
+    "no-proto": "error",
+    "radix": "error",
+    "require-yield": "error",
+    "no-unused-expressions": [
+      "error",
+      { "allowShortCircuit": true, "allowTernary": true, "allowTaggedTemplates": true }
+    ],
+
+    // House rule: relative imports are extensionless (extensions break Bun's
+    // test runner and the declaration patcher).
+    "import/extensions": ["error", "never", { "ignorePackages": true, "checkTypeImports": true }],
+
+    // House rule: schedule work through the injectable Timer
+    // (src/utils/SystemTimer.ts) so tests can use FakeTimer.
+    "no-restricted-globals": [
+      "error",
+      {
+        "name": "setTimeout",
+        "message": "Use Timer.setTimeout() from src/utils/SystemTimer so tests can inject FakeTimer."
+      },
+      {
+        "name": "setInterval",
+        "message": "Use Timer.setInterval() from src/utils/SystemTimer so tests can inject FakeTimer."
+      }
+    ],
+
+    // Type-aware (only active with `--type-aware`, see `bun run lint:types`).
+    "typescript/await-thenable": "error",
+    "typescript/no-floating-promises": "error",
+    "typescript/no-misused-promises": ["error", { "checksVoidReturn": { "attributes": false } }],
+
+    // House rules from scripts/lint/template-plugin.ts.
+    "template/naming-convention": "error",
+    "template/import-boundaries": [
+      "error",
+      {
+        "elements": {
+          "utils": ["src/utils/"],
+          "server": ["src/server/"],
+          "cli": ["src/cli"],
+          "composition": ["src/composition"],
+          "config": ["src/config"],
+          "logger": ["src/logger"],
+          "fakes": ["test/fakes/"],
+          "examples": ["examples/"]
+        },
+        "disallow": {
+          "utils": ["server", "cli", "composition", "examples"],
+          "server": ["cli", "composition", "examples"],
+          "config": ["server", "cli", "composition", "examples", "utils"],
+          "logger": ["server", "cli", "composition", "examples", "utils"],
+          "fakes": ["examples"]
+        }
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["test/**/*.ts"],
+      "rules": {
+        "no-unused-expressions": "off",
+        "typescript/await-thenable": "off"
+      }
+    },
+    {
+      // The only two files allowed to touch the raw global timers.
+      "files": ["**/SystemTimer.ts", "**/FakeTimer.ts"],
+      "rules": {
+        "no-restricted-globals": "off"
+      }
+    }
+  ]
+}

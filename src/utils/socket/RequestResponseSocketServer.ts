@@ -1,4 +1,4 @@
-import { Socket } from "node:net";
+import type { Socket } from "node:net";
 import { type Timer, defaultTimer } from "../SystemTimer";
 import { BaseSocketServer } from "./BaseSocketServer";
 import type { SocketRequest, SocketResponse } from "./SocketServerTypes";

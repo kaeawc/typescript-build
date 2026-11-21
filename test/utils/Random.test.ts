@@ -83,7 +83,7 @@ describe("SeededRandom", () => {
     const original = [1, 2, 3, 4, 5];
     const shuffled = rng.shuffle(original);
     expect(shuffled.length).toBe(original.length);
-    expect(shuffled.sort()).toEqual(original.sort());
+    expect(shuffled.toSorted((a, b) => a - b)).toEqual(original.toSorted((a, b) => a - b));
   });
 
   test("shuffle() is deterministic for the same seed", () => {

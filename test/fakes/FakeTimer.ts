@@ -1,4 +1,4 @@
-import { Timer } from "../../src/utils/SystemTimer";
+import type { Timer } from "../../src/utils/SystemTimer";
 
 /**
  * Pending sleep call information

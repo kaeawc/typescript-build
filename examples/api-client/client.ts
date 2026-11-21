@@ -1,4 +1,4 @@
-import { type Schema } from "ajv";
+import type { Schema } from "ajv";
 import { CircuitBreaker } from "../../src/utils/CircuitBreaker";
 import type { HttpClient } from "../../src/utils/HttpClient";
 import { NodeHttpClient } from "../../src/utils/HttpClient";

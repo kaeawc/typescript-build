@@ -72,7 +72,7 @@ export class NodeHttpClient implements HttpClient {
     const timeoutMs = request.timeoutMs ?? this.timeoutMs;
 
     const { body, contentType } = encodeBody(request.body);
-    const headers: Record<string, string> = { ...this.defaultHeaders, ...(request.headers ?? {}) };
+    const headers: Record<string, string> = { ...this.defaultHeaders, ...request.headers };
     if (contentType && !headers["content-type"] && !headers["Content-Type"]) {
       headers["content-type"] = contentType;
     }

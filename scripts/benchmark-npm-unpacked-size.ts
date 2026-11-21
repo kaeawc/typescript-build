@@ -146,7 +146,7 @@ function loadThresholdConfig(configPath: string): ThresholdConfig {
 
     return config;
   } catch (error) {
-    console.error(`Error loading threshold configuration: ${error}`);
+    console.error(`Error loading threshold configuration: ${String(error)}`);
     process.exit(1);
   }
 }
@@ -187,7 +187,7 @@ function parsePackOutput(stdout: string): {
   try {
     payload = JSON.parse(trimmed);
   } catch (error) {
-    throw new Error(`Failed to parse npm pack output: ${error}`);
+    throw new Error(`Failed to parse npm pack output: ${String(error)}`);
   }
 
   if (!Array.isArray(payload) || payload.length === 0) {

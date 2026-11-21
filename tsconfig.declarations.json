@@ -1,5 +1,7 @@
 {
-  "extends": "./tsconfig.typecheck.json",
+  "$schema": "https://json.schemastore.org/tsconfig",
+  // Emits .d.ts files for the published package. JavaScript comes from build.ts.
+  "extends": "./tsconfig.json",
   "compilerOptions": {
     "declaration": true,
     "emitDeclarationOnly": true,

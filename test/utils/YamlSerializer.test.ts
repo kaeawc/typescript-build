@@ -21,6 +21,16 @@ describe("parseYaml", () => {
     expect(result.error).toBeUndefined();
     expect(result.value).toBeUndefined();
   });
+
+  test("comment-only input yields undefined value with no error", () => {
+    expect(parseYaml("# nothing here\n")).toEqual({ value: undefined });
+  });
+
+  test("multiple documents are a structured error", () => {
+    const result = parseYaml("a: 1\n---\nb: 2\n");
+    expect(result.value).toBeUndefined();
+    expect(result.error?.message).toContain("single document");
+  });
 });
 
 describe("parseYamlStrict", () => {
@@ -30,6 +40,10 @@ describe("parseYamlStrict", () => {
 
   test("returns the parsed value", () => {
     expect(parseYamlStrict<{ a: number }>("a: 1")).toEqual({ a: 1 });
+  });
+
+  test("returns undefined for empty input", () => {
+    expect(parseYamlStrict("")).toBeUndefined();
   });
 });
 

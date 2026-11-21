@@ -1,4 +1,5 @@
-import { createConnection, Socket } from "node:net";
+import type { Socket } from "node:net";
+import { createConnection } from "node:net";
 import { existsSync, statSync } from "node:fs";
 import { platform } from "node:os";
 import { type Timer, defaultTimer } from "../SystemTimer";
@@ -185,7 +186,7 @@ export class SocketClient<
       try {
         response = JSON.parse(line) as TResponse;
       } catch (error) {
-        console.error(`[SocketClient] failed to parse response: ${error}`);
+        console.error(`[SocketClient] failed to parse response: ${String(error)}`);
         continue;
       }
       if (response.id === undefined) {

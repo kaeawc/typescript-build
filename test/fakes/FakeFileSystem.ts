@@ -2,7 +2,7 @@
  * Fake implementation of FileSystem for testing.
  * Stores files in memory instead of interacting with the real file system.
  */
-import { FileSystem } from "../../src/utils/filesystem/DefaultFileSystem";
+import type { FileSystem } from "../../src/utils/filesystem/DefaultFileSystem";
 
 export class FakeFileSystem implements FileSystem {
   private files: Map<string, string> = new Map();
