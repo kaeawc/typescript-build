@@ -17,6 +17,7 @@ Every example is tiny enough to read in one sitting.
 | [`background-worker/`](./background-worker/) | Bounded-concurrency background work with retries, typed failures, and injectable dependencies.                                     |
 | [`file-processor/`](./file-processor/)       | File I/O through interfaces, checksum calculation, path containment, and `Result` errors.                                          |
 | [`api-client/`](./api-client/)               | Outbound HTTP with retries, schema validation, typed errors, and circuit breaking.                                                 |
+| [`mcp-client/`](./mcp-client/)               | An MCP SDK v2 client touring the notes MCP server over stdio or HTTP: tools, resources, prompts, completion, input required.       |
 
 ## Running an example
 
@@ -29,6 +30,7 @@ bun examples/websocket-chat/server.ts
 bun examples/background-worker/index.ts
 bun examples/file-processor/index.ts . package.json
 bun examples/api-client/index.ts https://api.example.test 123
+bun run build && bun examples/mcp-client/index.ts
 ```
 
 Each example has its own `README.md` with a detailed walk-through of which

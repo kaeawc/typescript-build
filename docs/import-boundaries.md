@@ -22,8 +22,9 @@ is a config change:
 }]
 ```
 
-Current policy: `utils` must not import `server`, `cli`, `composition`, or
-`examples`; `server` must not import `cli`, `composition`, or `examples`;
+Current policy: `utils` must not import `server`, `mcp`, `cli`, `composition`, or
+`examples`; `server` must not import `mcp`, `cli`, `composition`, or `examples`;
+`mcp` may use `utils` and `server` but not `cli`, `composition`, or `examples`;
 `config` and `logger` must not import anything above them, utilities
 included; reusable `test/fakes` must not import `examples`.
 
