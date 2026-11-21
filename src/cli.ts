@@ -115,19 +115,22 @@ const runServe = async (portArg: string | undefined, deps: CliDeps): Promise<Cli
   return { exitCode: 0 };
 };
 
-const defaultServerFactory = (greeting: string): (() => HttpServer) => () => createHonoServer({
-  handlers: [
-    {
-      method: "GET",
-      path: "/greet/:name",
-      handler: request => {
-        const url = new URL(request.url);
-        const name = url.pathname.split("/").pop() ?? "world";
-        return jsonResponse({ greeting: `${greeting}, ${name}!` });
-      },
-    },
-  ],
-});
+const defaultServerFactory =
+  (greeting: string): (() => HttpServer) =>
+  () =>
+    createHonoServer({
+      handlers: [
+        {
+          method: "GET",
+          path: "/greet/:name",
+          handler: request => {
+            const url = new URL(request.url);
+            const name = url.pathname.split("/").pop() ?? "world";
+            return jsonResponse({ greeting: `${greeting}, ${name}!` });
+          },
+        },
+      ],
+    });
 
 const waitForSignalShutdown = (): Promise<void> =>
   new Promise<void>(resolve => {

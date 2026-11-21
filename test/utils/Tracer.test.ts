@@ -48,8 +48,12 @@ describe("RecordingTracer", () => {
     const tracer = new RecordingTracer(new FakeClock("2026-01-01T00:00:00.000Z"));
 
     await tracer.withSpan("parent", async () => {
-      await tracer.withSpan("child-a", async () => { /* noop */ });
-      await tracer.withSpan("child-b", async () => { /* noop */ });
+      await tracer.withSpan("child-a", async () => {
+        /* noop */
+      });
+      await tracer.withSpan("child-b", async () => {
+        /* noop */
+      });
     });
 
     const spans = tracer.finishedSpans();
@@ -68,7 +72,9 @@ describe("RecordingTracer", () => {
   test("withSpan records exceptions and surfaces them", async () => {
     const tracer = new RecordingTracer(new FakeClock(0));
     await expect(
-      tracer.withSpan("boom", async () => { throw new Error("nope"); })
+      tracer.withSpan("boom", async () => {
+        throw new Error("nope");
+      }),
     ).rejects.toThrow(/nope/);
 
     const span = tracer.finishedSpans()[0]!;
@@ -95,7 +101,9 @@ describe("RecordingTracer", () => {
 
   test("reset clears the recording buffer", async () => {
     const tracer = new RecordingTracer(new FakeClock(0));
-    await tracer.withSpan("a", async () => { /* noop */ });
+    await tracer.withSpan("a", async () => {
+      /* noop */
+    });
     expect(tracer.finishedSpans()).toHaveLength(1);
     tracer.reset();
     expect(tracer.finishedSpans()).toHaveLength(0);

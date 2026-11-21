@@ -11,7 +11,8 @@ export class FakeProcessExecutor implements ProcessExecutor {
   private commandResponses: Map<string, ExecResult> = new Map();
   private defaultResponse: ExecResult = this.createExecResult("", "");
   private executedCommands: string[] = [];
-  private spawnResponses: Array<{ command: string; args: string[]; options?: SpawnOptions; process: ChildProcess }> = [];
+  private spawnResponses: Array<{ command: string; args: string[]; options?: SpawnOptions; process: ChildProcess }> =
+    [];
   private nextSpawnProcess: ChildProcess | null = null;
 
   setCommandResponse(commandPattern: string, response: ExecResult): void {
@@ -82,7 +83,10 @@ export class FakeProcessExecutor implements ProcessExecutor {
       stderr,
       toString: typeof response.toString === "function" ? response.toString.bind(response) : () => stdout,
       trim: typeof response.trim === "function" ? response.trim.bind(response) : () => stdout.trim(),
-      includes: typeof response.includes === "function" ? response.includes.bind(response) : (searchString: string) => stdout.includes(searchString),
+      includes:
+        typeof response.includes === "function"
+          ? response.includes.bind(response)
+          : (searchString: string) => stdout.includes(searchString),
     };
   }
 }

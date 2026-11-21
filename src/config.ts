@@ -31,9 +31,7 @@ const parseLogLevel = (raw: string | undefined): LogLevel => {
   }
   const lower = raw.toLowerCase();
   if (!VALID_LOG_LEVELS.includes(lower as LogLevel)) {
-    throw new ConfigError(
-      `Invalid LOG_LEVEL: ${JSON.stringify(raw)}. Expected one of: ${VALID_LOG_LEVELS.join(", ")}`
-    );
+    throw new ConfigError(`Invalid LOG_LEVEL: ${JSON.stringify(raw)}. Expected one of: ${VALID_LOG_LEVELS.join(", ")}`);
   }
   return lower as LogLevel;
 };
@@ -44,7 +42,7 @@ const parseEnvironment = (raw: string | undefined): Environment => {
   }
   if (!VALID_ENVIRONMENTS.includes(raw as Environment)) {
     throw new ConfigError(
-      `Invalid NODE_ENV: ${JSON.stringify(raw)}. Expected one of: ${VALID_ENVIRONMENTS.join(", ")}`
+      `Invalid NODE_ENV: ${JSON.stringify(raw)}. Expected one of: ${VALID_ENVIRONMENTS.join(", ")}`,
     );
   }
   return raw as Environment;

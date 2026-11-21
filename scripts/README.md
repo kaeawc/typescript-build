@@ -63,18 +63,24 @@ validation, message-router dispatch, and cold CLI import.
 
 ## Dead code detection
 
-`detect-dead-code-ts.sh` runs both `ts-prune` and `knip`, filters their
-output through `dead-code-allowlist.json`, and emits a unified report.
+`bun run dead-code:ts` runs [knip](https://knip.dev), which reports unused
+files, exports, and dependencies. Intentional exceptions (the public API in
+`src/index.ts`, reusable utilities in `src/utils/`, fixtures, contracts, and
+examples) live in `knip.json` under `ignoreIssues`. Extra flags pass through
+to knip:
 
 ```bash
-bash scripts/detect-dead-code-ts.sh
-bash scripts/detect-dead-code-ts.sh --json
-bash scripts/detect-dead-code-ts.sh --threshold=10
-bash scripts/detect-dead-code-ts.sh --output-dir=reports/
+bun run dead-code:ts
+bun run dead-code:ts -- --max-issues=10
+bun run dead-code:ts -- --reporter markdown --output-file markdown=reports/dead-code-report.md
 ```
 
-`filter-ts-prune-allowlist.sh` is invoked by the `dead-code:ts:prune` npm script
-to filter raw `ts-prune` output through the allowlist.
+## Lint plugin
+
+`lint/template-plugin.ts` is a local oxlint JS plugin, loaded from
+`.oxlintrc.json`. It holds the house rules that have no native oxlint
+equivalent: `template/naming-convention` and `template/import-boundaries`.
+Tests live in `test/scripts/template-plugin.test.ts`.
 
 ## NPM unpacked size benchmark
 

@@ -26,7 +26,7 @@ jobs:
       docs_only: ${{ steps.filter.outputs.docs_only }}
     steps:
       - name: "Git Checkout"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           lfs: false
 
@@ -76,7 +76,7 @@ jobs:
 
       - name: "Git Checkout"
         if: needs.detect-changes.outputs.docs_only != 'true'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           lfs: false
 
@@ -84,34 +84,9 @@ jobs:
         if: needs.detect-changes.outputs.docs_only != 'true'
         uses: ./.github/actions/setup-bun-turbo
 
-      - name: "Run Lint"
-        if: needs.detect-changes.outputs.docs_only != 'true'
-        env:
-          TURBO_TELEMETRY_DISABLED: "1"
-          TURBO_NO_UPDATE_NOTIFIER: "1"
-          DO_NOT_TRACK: "1"
-          NO_COLOR: "1"
-        run: bunx turbo run lint --output-logs=errors-only --log-order=grouped
-
-      - name: "Run Type-Aware Lint"
-        if: needs.detect-changes.outputs.docs_only != 'true'
-        env:
-          TURBO_TELEMETRY_DISABLED: "1"
-          TURBO_NO_UPDATE_NOTIFIER: "1"
-          DO_NOT_TRACK: "1"
-          NO_COLOR: "1"
-        run: bunx turbo run lint:types --output-logs=errors-only --log-order=grouped
-
-      - name: "Run Typecheck"
-        if: needs.detect-changes.outputs.docs_only != 'true'
-        env:
-          TURBO_TELEMETRY_DISABLED: "1"
-          TURBO_NO_UPDATE_NOTIFIER: "1"
-          DO_NOT_TRACK: "1"
-          NO_COLOR: "1"
-        run: bunx turbo run typecheck --output-logs=errors-only --log-order=grouped
-
-      - name: "Run Build"
+      # One turbo invocation runs every task in parallel (oxfmt, oxlint,
+      # tsgolint, tsc, bun build, bun test) and restores cached results.
+      - name: "Format, Lint, Typecheck, Build, Test"
         if: needs.detect-changes.outputs.docs_only != 'true'
         shell: bash
         env:
@@ -122,20 +97,8 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p ci-logs
-          bunx turbo run build --output-logs=errors-only --log-order=grouped 2>&1 | tee "ci-logs/bun-build-${{ matrix.os }}.log"
-
-      - name: "Run Tests"
-        if: needs.detect-changes.outputs.docs_only != 'true'
-        shell: bash
-        env:
-          TURBO_TELEMETRY_DISABLED: "1"
-          TURBO_NO_UPDATE_NOTIFIER: "1"
-          DO_NOT_TRACK: "1"
-          NO_COLOR: "1"
-        run: |
-          set -euo pipefail
-          mkdir -p ci-logs
-          bunx turbo run test --output-logs=errors-only --log-order=grouped 2>&1 | tee "ci-logs/bun-test-${{ matrix.os }}.log"
+          bunx turbo run format:check lint lint:types typecheck build test \
+            --output-logs=errors-only --log-order=grouped 2>&1 | tee "ci-logs/turbo-validate-${{ matrix.os }}.log"
 
       - name: "Upload Build/Test Logs"
         if: needs.detect-changes.outputs.docs_only != 'true' && (failure() || cancelled())
@@ -155,7 +118,7 @@ jobs:
     if: needs.detect-changes.outputs.docs_only != 'true'
     steps:
       - name: "Git Checkout"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           lfs: false
 
@@ -203,7 +166,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Git Checkout"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           lfs: false
 
@@ -223,12 +186,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Git Checkout"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           lfs: false
 
       - name: "Run hadolint"
-        uses: hadolint/hadolint-action@v3.3.0
+        uses: hadolint/hadolint-action@v3.5.0
         with:
           dockerfile: ci/Dockerfile
           failure-threshold: error
@@ -241,7 +204,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Git Checkout"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           lfs: false
 
@@ -249,7 +212,7 @@ jobs:
         run: bash scripts/validate_dependabot.sh
 
   # =============================================================================
-  # Dead-code detection (PR-level, soft gate)
+  # Dead-code detection (knip: unused files, exports, dependencies)
   # =============================================================================
   dead-code:
     name: "Dead Code Detection"
@@ -258,21 +221,17 @@ jobs:
     if: needs.detect-changes.outputs.docs_only != 'true'
     steps:
       - name: "Git Checkout"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           lfs: false
 
-      - name: "Install jq"
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
-
       - uses: ./.github/actions/setup-bun-turbo
 
-      - name: "Run Dead Code Detection"
+      - name: "Run knip"
         run: |
           mkdir -p reports
-          bun run dead-code:ts -- --output-dir=reports
+          bun run dead-code:ts -- --reporter symbols \
+            --reporter markdown --output-file markdown=reports/dead-code-report.md
 
       - name: "Upload Dead Code Report"
         uses: actions/upload-artifact@v7
@@ -292,7 +251,7 @@ jobs:
     if: needs.detect-changes.outputs.docs_only != 'true'
     steps:
       - name: "Git Checkout"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           lfs: false
 
@@ -340,7 +299,7 @@ jobs:
     if: needs.detect-changes.outputs.docs_only != 'true'
     steps:
       - name: "Git Checkout"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           lfs: false
 
@@ -364,7 +323,7 @@ jobs:
     if: needs.detect-changes.outputs.docs_only != 'true'
     steps:
       - name: "Git Checkout"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           lfs: false
 
@@ -380,7 +339,7 @@ jobs:
     if: needs.detect-changes.outputs.docs_only != 'true'
     steps:
       - name: "Git Checkout"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           lfs: false
 

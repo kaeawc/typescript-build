@@ -10,11 +10,7 @@ export interface HostCommandOptions {
 }
 
 export interface HostCommandExecutor {
-  executeCommand(
-    file: string,
-    args?: string[],
-    options?: HostCommandOptions
-  ): Promise<ExecResult>;
+  executeCommand(file: string, args?: string[], options?: HostCommandOptions): Promise<ExecResult>;
 }
 
 type ExecFileAsync = (
@@ -24,7 +20,7 @@ type ExecFileAsync = (
     timeout?: number;
     maxBuffer?: number;
     cwd?: string;
-  }
+  },
 ) => Promise<{ stdout: string | Buffer; stderr: string | Buffer }>;
 
 const execFileAsync: ExecFileAsync = async (
@@ -34,7 +30,7 @@ const execFileAsync: ExecFileAsync = async (
     timeout?: number;
     maxBuffer?: number;
     cwd?: string;
-  }
+  },
 ): Promise<{ stdout: string | Buffer; stderr: string | Buffer }> => {
   return promisify(execFile)(file, args, options);
 };
@@ -46,11 +42,7 @@ export class DefaultHostCommandExecutor implements HostCommandExecutor {
     this.execAsync = execAsyncFn;
   }
 
-  async executeCommand(
-    file: string,
-    args: string[] = [],
-    options: HostCommandOptions = {}
-  ): Promise<ExecResult> {
+  async executeCommand(file: string, args: string[] = [], options: HostCommandOptions = {}): Promise<ExecResult> {
     const execOptions: {
       timeout?: number;
       maxBuffer?: number;

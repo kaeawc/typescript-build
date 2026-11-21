@@ -49,12 +49,7 @@ export class RequestManager {
    * @returns Promise that resolves with the response, or with
    *   `timeoutErrorFactory(...)` after `timeoutMs` if nothing arrives.
    */
-  register<T>(
-    id: string,
-    type: string,
-    timeoutMs: number,
-    timeoutErrorFactory: TimeoutErrorFactory<T>
-  ): Promise<T> {
+  register<T>(id: string, type: string, timeoutMs: number, timeoutErrorFactory: TimeoutErrorFactory<T>): Promise<T> {
     return new Promise<T>((resolve, reject) => {
       const timeoutId = this.timer.setTimeout(() => {
         const request = this.pending.get(id);

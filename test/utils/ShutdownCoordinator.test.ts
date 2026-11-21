@@ -7,9 +7,15 @@ describe("ShutdownCoordinator", () => {
     const coordinator = new ShutdownCoordinator();
     const log: string[] = [];
 
-    coordinator.register("first",  async () => { log.push("first"); });
-    coordinator.register("second", async () => { log.push("second"); });
-    coordinator.register("third",  async () => { log.push("third"); });
+    coordinator.register("first", async () => {
+      log.push("first");
+    });
+    coordinator.register("second", async () => {
+      log.push("second");
+    });
+    coordinator.register("third", async () => {
+      log.push("third");
+    });
 
     await coordinator.shutdown();
     expect(log).toEqual(["third", "second", "first"]);
@@ -26,7 +32,9 @@ describe("ShutdownCoordinator", () => {
   test("deregister function removes a hook", async () => {
     const coordinator = new ShutdownCoordinator();
     const log: string[] = [];
-    const unregister = coordinator.register("keep-me?", async () => { log.push("ran"); });
+    const unregister = coordinator.register("keep-me?", async () => {
+      log.push("ran");
+    });
     unregister();
     await coordinator.shutdown();
     expect(log).toEqual([]);
@@ -35,7 +43,9 @@ describe("ShutdownCoordinator", () => {
   test("shutdown is idempotent — subsequent calls await the original", async () => {
     const coordinator = new ShutdownCoordinator();
     let runs = 0;
-    coordinator.register("once", async () => { runs += 1; });
+    coordinator.register("once", async () => {
+      runs += 1;
+    });
 
     const first = coordinator.shutdown();
     const second = coordinator.shutdown();
@@ -55,13 +65,21 @@ describe("ShutdownCoordinator", () => {
   test("errors in a hook are caught and reported, then shutdown continues", async () => {
     const reported: Array<[string, unknown]> = [];
     const coordinator = new ShutdownCoordinator({
-      onHookError: (name, error) => { reported.push([name, error]); },
+      onHookError: (name, error) => {
+        reported.push([name, error]);
+      },
     });
 
     const log: string[] = [];
-    coordinator.register("first",  async () => { log.push("first"); });
-    coordinator.register("boom",   async () => { throw new Error("kaboom"); });
-    coordinator.register("third",  async () => { log.push("third"); });
+    coordinator.register("first", async () => {
+      log.push("first");
+    });
+    coordinator.register("boom", async () => {
+      throw new Error("kaboom");
+    });
+    coordinator.register("third", async () => {
+      log.push("third");
+    });
 
     await coordinator.shutdown();
 
@@ -77,11 +95,21 @@ describe("ShutdownCoordinator", () => {
     const coordinator = new ShutdownCoordinator({
       timer,
       hookTimeoutMs: 1000,
-      onHookError: (name, error) => { reported.push([name, error]); },
+      onHookError: (name, error) => {
+        reported.push([name, error]);
+      },
     });
 
-    coordinator.register("slow", () => new Promise<void>(() => { /* never resolves */ }));
-    coordinator.register("fast", async () => { /* completes immediately */ });
+    coordinator.register(
+      "slow",
+      () =>
+        new Promise<void>(() => {
+          /* never resolves */
+        }),
+    );
+    coordinator.register("fast", async () => {
+      /* completes immediately */
+    });
 
     const shutdownPromise = coordinator.shutdown();
     // Drain enough microtasks for runHooks to finish the fast hook and

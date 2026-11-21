@@ -1,22 +1,22 @@
 # typescript-build
 
-A Bun + Turbo + TypeScript template, preconfigured with the fast validation and
-guardrails used in [auto-mobile](https://github.com/kaeawc/auto-mobile). Intended
+A Bun + Turbo + TypeScript 7 template with oxc-based linting and formatting,
+preconfigured with the fast validation and guardrails used in [auto-mobile](https://github.com/kaeawc/auto-mobile). Intended
 to be forked as the starting point for TypeScript projects where agents
 (Claude Code, Codex, Cursor, etc.) do most of the implementation work.
 
 ## Key rules
 
 - **TypeScript only.** No JavaScript source files. Config files like
-  `eslint.config.mjs` are the only exception.
+  `commitlint.config.mjs` are the only exception.
 - **No file extensions in relative imports.** Use `./foo`, never `./foo.ts` or
-  `./foo.js`. ESLint `no-restricted-syntax` rules enforce this — do not disable
-  them. Extensions break Bun's test runner and esbuild-register.
+  `./foo.js`. oxlint's `import/extensions` rule enforces this — do not disable
+  it. Extensions break Bun's test runner and the declaration patcher.
 - **Never call `setTimeout`/`setInterval` directly.** Use the `Timer` interface
   from `src/utils/SystemTimer.ts` so tests can inject `FakeTimer` and avoid
   flakiness. Accept a `Timer` parameter (default `defaultTimer`) in any class
-  that schedules work. ESLint enforces this; only `SystemTimer.ts` and
-  `FakeTimer.ts` are exempt.
+  that schedules work. oxlint's `no-restricted-globals` enforces this; only
+  `SystemTimer.ts` and `FakeTimer.ts` are exempt.
 - **Prefer interfaces + fakes over mocks.** For filesystem, timer, crypto,
   cache, and anything else that hits I/O or the clock: accept the interface,
   test against the fake in `test/fakes/`, wire the real implementation at the
@@ -24,6 +24,9 @@ to be forked as the starting point for TypeScript projects where agents
 - **Bun is the task runner.** Everything funnels through `package.json` scripts;
   do not invoke `tsc`, `node`, `npx`, or `tsx` directly. Use `bun run <script>`
   for npm scripts and `bun <file.ts>` to execute TypeScript directly.
+- **Lint with oxlint, format with oxfmt, typecheck with TypeScript 7.** Run
+  `bun run lint:fix` and `bun run format` instead of hand-fixing style. Do not
+  add ESLint, Prettier, or typescript-eslint; see ADR-0007.
 - **Turborepo caches lint/build/test.** Prefer `turbo run` over raw `bun run`
   when iterating on multiple tasks, so unchanged tasks skip.
 - **After implementation changes, run the relevant validation commands** before
@@ -114,16 +117,17 @@ examples/
   http-service/         Minimal Hono HTTP service
   websocket-chat/       Minimal typed-WebSocket chat server + client
 scripts/              Validation, guardrails, benchmarks (see scripts/README.md)
+  lint/template-plugin.ts  oxlint JS plugin: naming-convention + import-boundaries
 ci/                   Dockerfile and container-related CI assets
 .github/              Workflows and dependabot
 build.ts              Bun-native build entry (produces dist/)
 turbo.json            Turborepo task graph (build / lint / test / test:coverage)
-tsconfig.json         Runtime TypeScript config
-tsconfig.dead-code.json  Dead-code analysis config (includes scripts/test/build.ts)
-eslint.config.mjs     Flat-config ESLint with TypeScript + stylistic rules
-bunfig.toml           bun:test coverage settings
+tsconfig.json         The single type-checking config (editor, tsc, tsgolint)
+tsconfig.declarations.json  .d.ts emit for the published package
+.oxlintrc.json        oxlint rules, house rules, and the layer-boundary table
+.oxfmtrc.json         oxfmt formatting options
+bunfig.toml           bun:test coverage settings; runs package binaries on Bun
 knip.json             knip config for unused export/file/dependency detection
-dead-code-allowlist.json  Allowlist consumed by detect-dead-code-ts.sh
 lefthook.yml          Git hooks (pre-commit + pre-push)
 ```
 
@@ -132,40 +136,40 @@ lefthook.yml          Git hooks (pre-commit + pre-push)
 All accept an interface + have a fake (or are stateless enough not to need one).
 Inject them through constructors or function parameters; do not reach for globals.
 
-| Interface | Real | Fake | Use for |
-|-----------|------|------|---------|
-| `Timer` | `SystemTimer` / `defaultTimer` | `FakeTimer` | Anything that sleeps, polls, or schedules |
-| `FileSystem` | `DefaultFileSystem` | `FakeFileSystem` | File I/O |
-| `HostCommandExecutor` | `DefaultHostCommandExecutor` | `FakeHostCommandExecutor` | One-shot `execFile` calls |
-| `ProcessExecutor` | `DefaultProcessExecutor` | `FakeProcessExecutor` | `exec`/`spawn` (includes `FakeChildProcess`) |
-| `FileDownloader` | `DefaultFileDownloader` | `FakeFileDownloader` | HTTP downloads with curl/wget fallback |
-| `ChecksumCalculator` | `DefaultChecksumCalculator` | `FakeChecksumCalculator` | SHA-256 file digests with fallback tools |
-| `HttpClient` | `NodeHttpClient` | `FakeHttpClient` | Outbound HTTP requests |
-| `CryptoService` | `NodeCryptoService` | — (stateless) | Cache keys, sha256 verification |
-| `IdGenerator` | `NodeIdGenerator` / `CountingIdGenerator` | `FakeIdGenerator` | Request IDs, trace IDs, correlation tokens |
-| `RetryExecutor` | `DefaultRetryExecutor` | use `FakeTimer` for time control | Exponential backoff + abort-aware retries |
-| — | `RequestManager` | use `FakeTimer` | Request/response correlation with timeout |
-| — | `TTLCache<K, V>` | use `FakeTimer` | Memoization with TTL + LRU |
-| — | `AsyncMutex` / `Semaphore` | none needed | Async mutual exclusion, concurrency limits |
-| — | `JsonSchemaValidator` (ajv) | none needed | Validate JS values against a JSON schema with structured errors |
-| — | `parseYaml` / `dumpYaml` | none needed | Structured YAML parsing with line/column error info |
-| — | `runWithAbortSignal` / `getAbortSignal` | — | Propagating `AbortSignal` across async boundaries |
-| — | `SocketClient<TReq, TRes>` + `RequestResponseSocketServer<TReq, TRes>` | write a local test double over a real temp-dir socket | Typed unix-socket request/response protocol |
-| `HttpServer` | `HonoHttpServer` (`createHonoServer`) | `FakeHttpServer` | Inbound HTTP. Hono-backed, Bun-first, portable to Node/Deno/CF |
-| `HttpClient` (decorator) | `RetryingHttpClient` | use `FakeHttpClient` + `FakeTimer` | Retries + backoff over any `HttpClient`; delegates to `RetryExecutor` |
-| `WebSocketServer<TRes>` | `BunWebSocketServer<TReq, TRes>` | `FakeWebSocketPair` | Typed WebSocket server over `Bun.serve` with native pub/sub broadcast |
-| `WebSocketClient<TReq, TRes>` | `BunWebSocketClient<TReq, TRes>` | `FakeWebSocketPair` | Typed WebSocket client with request/response correlation + reconnect-with-backoff |
-| — | `MessageRouter<TMessage, TContext, TResult>` | none needed | Discriminated-union dispatch (the TS equivalent of a sealed-class `when`) |
-| `Clock` | `SystemClock` / `systemClock` | `FakeClock` | Absolute-time reads: token expiration, audit logs, cache freshness |
-| `Random` | `CryptoRandom` | `SeededRandom` (mulberry32) | Random IDs, shuffles, picks, jitter |
-| `EnvReader` | `ProcessEnvReader` | pass any `Record<string, string \| undefined>` as the source | Env-var access inside individual modules |
-| `KvStore<V>` | `InMemoryKvStore<V>` | same impl — swap a persistent subclass at the composition root | Key-value storage with optional TTL |
-| `Tracer` | `NoopTracer` / `noopTracer` | `RecordingTracer` | OpenTelemetry-shaped spans with AsyncLocalStorage propagation |
-| — | `Result<T, E>` + `ok`/`err`/`tryCatch`/`tryCatchAsync`/`all` | none needed | Expected-failure return values (ADR-0006) |
-| — | `TaggedError<TTag>` + `isTagged` | none needed | Discriminated-union error hierarchy |
-| — | `Brand<T, B>` + `brand<B>()` | none needed | Nominal typing for primitive values |
-| — | `ShutdownCoordinator` | use `FakeTimer` | Graceful LIFO teardown with per-hook timeouts |
-| — | `installErrorHandlers({ logger })` | override `onUncaught` | Top-level process error handling |
+| Interface                     | Real                                                                   | Fake                                                           | Use for                                                                           |
+| ----------------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `Timer`                       | `SystemTimer` / `defaultTimer`                                         | `FakeTimer`                                                    | Anything that sleeps, polls, or schedules                                         |
+| `FileSystem`                  | `DefaultFileSystem`                                                    | `FakeFileSystem`                                               | File I/O                                                                          |
+| `HostCommandExecutor`         | `DefaultHostCommandExecutor`                                           | `FakeHostCommandExecutor`                                      | One-shot `execFile` calls                                                         |
+| `ProcessExecutor`             | `DefaultProcessExecutor`                                               | `FakeProcessExecutor`                                          | `exec`/`spawn` (includes `FakeChildProcess`)                                      |
+| `FileDownloader`              | `DefaultFileDownloader`                                                | `FakeFileDownloader`                                           | HTTP downloads with curl/wget fallback                                            |
+| `ChecksumCalculator`          | `DefaultChecksumCalculator`                                            | `FakeChecksumCalculator`                                       | SHA-256 file digests with fallback tools                                          |
+| `HttpClient`                  | `NodeHttpClient`                                                       | `FakeHttpClient`                                               | Outbound HTTP requests                                                            |
+| `CryptoService`               | `NodeCryptoService`                                                    | — (stateless)                                                  | Cache keys, sha256 verification                                                   |
+| `IdGenerator`                 | `NodeIdGenerator` / `CountingIdGenerator`                              | `FakeIdGenerator`                                              | Request IDs, trace IDs, correlation tokens                                        |
+| `RetryExecutor`               | `DefaultRetryExecutor`                                                 | use `FakeTimer` for time control                               | Exponential backoff + abort-aware retries                                         |
+| —                             | `RequestManager`                                                       | use `FakeTimer`                                                | Request/response correlation with timeout                                         |
+| —                             | `TTLCache<K, V>`                                                       | use `FakeTimer`                                                | Memoization with TTL + LRU                                                        |
+| —                             | `AsyncMutex` / `Semaphore`                                             | none needed                                                    | Async mutual exclusion, concurrency limits                                        |
+| —                             | `JsonSchemaValidator` (ajv)                                            | none needed                                                    | Validate JS values against a JSON schema with structured errors                   |
+| —                             | `parseYaml` / `dumpYaml`                                               | none needed                                                    | Structured YAML parsing with line/column error info                               |
+| —                             | `runWithAbortSignal` / `getAbortSignal`                                | —                                                              | Propagating `AbortSignal` across async boundaries                                 |
+| —                             | `SocketClient<TReq, TRes>` + `RequestResponseSocketServer<TReq, TRes>` | write a local test double over a real temp-dir socket          | Typed unix-socket request/response protocol                                       |
+| `HttpServer`                  | `HonoHttpServer` (`createHonoServer`)                                  | `FakeHttpServer`                                               | Inbound HTTP. Hono-backed, Bun-first, portable to Node/Deno/CF                    |
+| `HttpClient` (decorator)      | `RetryingHttpClient`                                                   | use `FakeHttpClient` + `FakeTimer`                             | Retries + backoff over any `HttpClient`; delegates to `RetryExecutor`             |
+| `WebSocketServer<TRes>`       | `BunWebSocketServer<TReq, TRes>`                                       | `FakeWebSocketPair`                                            | Typed WebSocket server over `Bun.serve` with native pub/sub broadcast             |
+| `WebSocketClient<TReq, TRes>` | `BunWebSocketClient<TReq, TRes>`                                       | `FakeWebSocketPair`                                            | Typed WebSocket client with request/response correlation + reconnect-with-backoff |
+| —                             | `MessageRouter<TMessage, TContext, TResult>`                           | none needed                                                    | Discriminated-union dispatch (the TS equivalent of a sealed-class `when`)         |
+| `Clock`                       | `SystemClock` / `systemClock`                                          | `FakeClock`                                                    | Absolute-time reads: token expiration, audit logs, cache freshness                |
+| `Random`                      | `CryptoRandom`                                                         | `SeededRandom` (mulberry32)                                    | Random IDs, shuffles, picks, jitter                                               |
+| `EnvReader`                   | `ProcessEnvReader`                                                     | pass any `Record<string, string \| undefined>` as the source   | Env-var access inside individual modules                                          |
+| `KvStore<V>`                  | `InMemoryKvStore<V>`                                                   | same impl — swap a persistent subclass at the composition root | Key-value storage with optional TTL                                               |
+| `Tracer`                      | `NoopTracer` / `noopTracer`                                            | `RecordingTracer`                                              | OpenTelemetry-shaped spans with AsyncLocalStorage propagation                     |
+| —                             | `Result<T, E>` + `ok`/`err`/`tryCatch`/`tryCatchAsync`/`all`           | none needed                                                    | Expected-failure return values (ADR-0006)                                         |
+| —                             | `TaggedError<TTag>` + `isTagged`                                       | none needed                                                    | Discriminated-union error hierarchy                                               |
+| —                             | `Brand<T, B>` + `brand<B>()`                                           | none needed                                                    | Nominal typing for primitive values                                               |
+| —                             | `ShutdownCoordinator`                                                  | use `FakeTimer`                                                | Graceful LIFO teardown with per-hook timeouts                                     |
+| —                             | `installErrorHandlers({ logger })`                                     | override `onUncaught`                                          | Top-level process error handling                                                  |
 
 ### Patterns baked into the template
 
@@ -178,16 +182,17 @@ Inject them through constructors or function parameters; do not reach for global
   new implementation? Register it there so the shared contract catches drift.
   See `test/contracts/README.md`.
 - **ADRs** — non-obvious decisions live in `docs/adr/` so agents can read
-  *why* the code looks the way it does. Write a new ADR when you pick a
+  _why_ the code looks the way it does. Write a new ADR when you pick a
   library, establish a convention, or make a testability/portability tradeoff
   that a reader will later question.
-- **Architectural boundaries** — `eslint.config.mjs` uses
-  `eslint-plugin-boundaries` to enforce that `src/utils/` is a leaf layer
+- **Architectural boundaries** — `.oxlintrc.json` configures the
+  `template/import-boundaries` rule (`scripts/lint/template-plugin.ts`) to
+  enforce that `src/utils/` is a leaf layer
   (cannot import from `src/server/` or `src/cli.ts`), `src/config.ts` and
   `src/logger.ts` don't reach sideways, and `src/server/` doesn't depend on
   the CLI. Violations are lint errors. When you really need a new edge
   across layers, either (a) fix the architecture or (b) update the rules
-  with a justification.
+  with a justification. See `docs/import-boundaries.md`.
 - **`Result<T, E>` + `TaggedError`** — prefer returning typed results over
   throwing for expected failure modes. See ADR-0006 for the rule of thumb.
 - **Examples as starting points** — `examples/cli-tool`, `examples/http-service`,
@@ -208,19 +213,21 @@ Prefer the turbo entrypoints — they cache across runs.
 
 ```bash
 bun install                     # First-time setup
-bun run turbo:validate          # Cached lint + typed lint + typecheck + build + test + quality gates
+bun run turbo:validate          # Cached format + lint + typed lint + typecheck + build + test + quality gates, then perf budgets
 bun run turbo:build             # Cached build only
 bun run turbo:lint              # Cached lint only
 bun run turbo:lint:types        # Cached type-aware lint only
+bun run turbo:format:check      # Cached formatting check only
 bun run turbo:typecheck         # Cached TypeScript semantic check only
 bun run turbo:test              # Cached test only
 bun run turbo:benchmark:perf    # Cached performance budget only
 
 # Bypasses the cache (use when debugging cache hits/misses):
 bun run build
-bun run lint
-bun run lint:types
-bun run typecheck
+bun run lint                    # oxlint (lint:fix to auto-fix)
+bun run lint:types              # oxlint --type-aware (tsgolint)
+bun run format                  # oxfmt (format:check to verify)
+bun run typecheck               # tsc from TypeScript 7
 bun run coverage:check
 bun run package:quality
 bun run validate:template
@@ -242,20 +249,18 @@ bash scripts/all_fast_validate_checks.sh --only shellcheck,dead-code
 bash scripts/all_fast_validate_checks.sh --skip lychee
 ```
 
-Available checks: `shellcheck`, `typecheck`, `lint-types`, `lychee`,
+Available checks: `shellcheck`, `typecheck`, `lint-types`, `format`, `lychee`,
 `dependabot`, `hadolint`, `dead-code`, `template-health`.
 
 ### Dead-code detection
 
-Combined `ts-prune` + `knip` report, filtered against
-`dead-code-allowlist.json`:
+knip reports unused files, exports, and dependencies. Intentional exceptions
+live in `knip.json` (`ignoreIssues`); add to them only with a reason.
 
 ```bash
-bun run dead-code:ts                          # Combined report (default)
-bun run dead-code:ts:knip                     # knip only
-bun run dead-code:ts:prune                    # ts-prune only, allowlist-filtered
-bash scripts/detect-dead-code-ts.sh --json
-bash scripts/detect-dead-code-ts.sh --threshold=10
+bun run dead-code:ts                          # knip
+bun run dead-code:ts -- --max-issues=10       # tolerate up to 10 issues
+bun run dead-code:ts -- --reporter json       # machine-readable report
 ```
 
 ### NPM unpacked-size guardrail
@@ -274,7 +279,7 @@ bun run hooks:install      # Install .git/hooks/{pre-commit,pre-push}
 bun run hooks:uninstall    # Remove them
 ```
 
-`pre-commit` runs eslint on staged `*.ts`/`*.mjs`/`*.cjs` (auto-stages fixes),
+`pre-commit` runs `oxlint --fix` then `oxfmt` on staged files (auto-stages fixes),
 shellcheck on staged `*.sh`, hadolint on staged Dockerfiles, and revalidates
 `dependabot.yml` when it changes. `pre-push` runs `bun run turbo:validate`.
 Skip a single run with `LEFTHOOK=0 git commit ...`. Hooks auto-skip in CI.

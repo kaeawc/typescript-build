@@ -1,5 +1,6 @@
 import { type BackoffInput, delayForAttempt } from "../Backoff";
-import { Timer, defaultTimer } from "../SystemTimer";
+import type { Timer } from "../SystemTimer";
+import { defaultTimer } from "../SystemTimer";
 
 /**
  * Configuration for retry behavior.
@@ -64,10 +65,7 @@ export interface RetryExecutor {
    * @param options - Retry configuration
    * @returns Result containing success status, value, and metadata
    */
-  execute<T>(
-    operation: (attempt: number) => Promise<T>,
-    options?: RetryOptions
-  ): Promise<RetryResult<T>>;
+  execute<T>(operation: (attempt: number) => Promise<T>, options?: RetryOptions): Promise<RetryResult<T>>;
 
   /**
    * Execute an operation with retry logic, throwing on failure.
@@ -76,10 +74,7 @@ export interface RetryExecutor {
    * @returns The operation result
    * @throws The final error if all attempts fail
    */
-  executeOrThrow<T>(
-    operation: (attempt: number) => Promise<T>,
-    options?: RetryOptions
-  ): Promise<T>;
+  executeOrThrow<T>(operation: (attempt: number) => Promise<T>, options?: RetryOptions): Promise<T>;
 }
 
 /**
@@ -99,10 +94,7 @@ export const DEFAULT_RETRY_OPTIONS: Required<Omit<RetryOptions, "signal" | "shou
 export class DefaultRetryExecutor implements RetryExecutor {
   constructor(private readonly timer: Timer = defaultTimer) {}
 
-  async execute<T>(
-    operation: (attempt: number) => Promise<T>,
-    options?: RetryOptions
-  ): Promise<RetryResult<T>> {
+  async execute<T>(operation: (attempt: number) => Promise<T>, options?: RetryOptions): Promise<RetryResult<T>> {
     const maxAttempts = options?.maxAttempts ?? DEFAULT_RETRY_OPTIONS.maxAttempts;
     const delays = options?.delays ?? DEFAULT_RETRY_OPTIONS.delays;
     const shouldRetry = options?.shouldRetry ?? (() => true);
@@ -186,10 +178,7 @@ export class DefaultRetryExecutor implements RetryExecutor {
     };
   }
 
-  async executeOrThrow<T>(
-    operation: (attempt: number) => Promise<T>,
-    options?: RetryOptions
-  ): Promise<T> {
+  async executeOrThrow<T>(operation: (attempt: number) => Promise<T>, options?: RetryOptions): Promise<T> {
     const result = await this.execute(operation, options);
     if (!result.success) {
       throw result.error ?? new Error("Operation failed after retries");

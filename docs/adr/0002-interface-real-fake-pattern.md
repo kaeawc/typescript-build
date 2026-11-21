@@ -51,6 +51,6 @@ Concrete examples: `Timer` / `SystemTimer` / `FakeTimer`, `Clock` /
 
 ## Status
 
-Accepted. Rules enforced by `eslint.config.mjs` (the `no-restricted-syntax`
+Accepted. Rules enforced by `.oxlintrc.json` (the `no-restricted-globals`
 ban on raw `setTimeout`/`setInterval`) and by `test/contracts/runAll.test.ts`
 (which runs every contract against every impl on every test run).

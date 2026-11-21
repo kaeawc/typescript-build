@@ -9,14 +9,14 @@ Every example is tiny enough to read in one sitting.
 
 ## Available examples
 
-| Example | What it shows |
-|---|---|
-| [`cli-tool/`](./cli-tool/) | A focused CLI that parses args, reads env vars, writes structured logs, and returns proper exit codes. |
-| [`http-service/`](./http-service/) | A Hono service with typed routes, `/health`, dependency injection through a composition root, and a retrying outbound HTTP client. |
-| [`websocket-chat/`](./websocket-chat/) | A typed WebSocket server + client exchanging discriminated-union chat messages, using `MessageRouter` for dispatch. |
-| [`background-worker/`](./background-worker/) | Bounded-concurrency background work with retries, typed failures, and injectable dependencies. |
-| [`file-processor/`](./file-processor/) | File I/O through interfaces, checksum calculation, path containment, and `Result` errors. |
-| [`api-client/`](./api-client/) | Outbound HTTP with retries, schema validation, typed errors, and circuit breaking. |
+| Example                                      | What it shows                                                                                                                      |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| [`cli-tool/`](./cli-tool/)                   | A focused CLI that parses args, reads env vars, writes structured logs, and returns proper exit codes.                             |
+| [`http-service/`](./http-service/)           | A Hono service with typed routes, `/health`, dependency injection through a composition root, and a retrying outbound HTTP client. |
+| [`websocket-chat/`](./websocket-chat/)       | A typed WebSocket server + client exchanging discriminated-union chat messages, using `MessageRouter` for dispatch.                |
+| [`background-worker/`](./background-worker/) | Bounded-concurrency background work with retries, typed failures, and injectable dependencies.                                     |
+| [`file-processor/`](./file-processor/)       | File I/O through interfaces, checksum calculation, path containment, and `Result` errors.                                          |
+| [`api-client/`](./api-client/)               | Outbound HTTP with retries, schema validation, typed errors, and circuit breaking.                                                 |
 
 ## Running an example
 

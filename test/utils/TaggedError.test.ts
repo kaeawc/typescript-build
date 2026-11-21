@@ -34,8 +34,10 @@ describe("TaggedError", () => {
   test("discriminated union narrowing works on _tag", () => {
     const handle = (error: RepoError): number => {
       switch (error._tag) {
-        case "NotFound": return 404;
-        case "Forbidden": return 403;
+        case "NotFound":
+          return 404;
+        case "Forbidden":
+          return 403;
       }
     };
 

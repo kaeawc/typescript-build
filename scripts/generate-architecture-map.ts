@@ -41,12 +41,12 @@ const collectRows = (): ModuleRow[] => {
   const fakeFiles = new Map(
     walk("test/fakes")
       .filter(path => path.endsWith(".ts"))
-      .map(path => [withoutSuffix(path.split("/").pop() ?? "", ".ts").replace(/^Fake/, ""), rel(path)])
+      .map(path => [withoutSuffix(path.split("/").pop() ?? "", ".ts").replace(/^Fake/, ""), rel(path)]),
   );
   const contractFiles = new Map(
     walk("test/contracts")
       .filter(path => path.endsWith("Contract.ts"))
-      .map(path => [withoutSuffix(path.split("/").pop() ?? "", "Contract.ts"), rel(path)])
+      .map(path => [withoutSuffix(path.split("/").pop() ?? "", "Contract.ts"), rel(path)]),
   );
 
   return sourceFiles.map(source => {
@@ -85,7 +85,9 @@ const render = (): string => {
   ];
 
   for (const row of rows) {
-    lines.push(`| \`${row.source}\` | ${row.tests.map(test => `\`${test}\``).join("<br>") || "-"} | ${row.fake ? `\`${row.fake}\`` : "-"} | ${row.contract ? `\`${row.contract}\`` : "-"} |`);
+    lines.push(
+      `| \`${row.source}\` | ${row.tests.map(test => `\`${test}\``).join("<br>") || "-"} | ${row.fake ? `\`${row.fake}\`` : "-"} | ${row.contract ? `\`${row.contract}\`` : "-"} |`,
+    );
   }
 
   lines.push("", "## ADRs", "");

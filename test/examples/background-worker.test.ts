@@ -22,14 +22,17 @@ describe("examples/background-worker", () => {
     const attempts = new Map<string, number>();
 
     const results = await processWorkItems(
-      [{ id: "a", payload: "one" }, { id: "b", payload: "two" }],
+      [
+        { id: "a", payload: "one" },
+        { id: "b", payload: "two" },
+      ],
       async (item, attempt) => {
         attempts.set(item.id, attempt);
         if (item.id === "a" && attempt === 1) {
           throw new Error("try again");
         }
       },
-      buildDeps()
+      buildDeps(),
     );
 
     expect(results.every(result => result.ok)).toBe(true);
@@ -43,7 +46,7 @@ describe("examples/background-worker", () => {
       async () => {
         throw new Error("permanent");
       },
-      buildDeps()
+      buildDeps(),
     );
 
     expect(results[0]?.ok).toBe(false);

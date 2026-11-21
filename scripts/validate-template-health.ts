@@ -16,7 +16,9 @@ interface TurboJson {
 const failures: string[] = [];
 
 const readJson = <T>(path: string): T => JSON.parse(readFileSync(path, "utf8")) as T;
-const fail = (message: string): void => { failures.push(message); };
+const fail = (message: string): void => {
+  failures.push(message);
+};
 
 const packageJson = readJson<PackageJson>("package.json");
 const scripts = packageJson.scripts ?? {};
@@ -24,7 +26,9 @@ const turbo = readJson<TurboJson>("turbo.json");
 
 const requiredScripts = [
   "typecheck",
+  "lint",
   "lint:types",
+  "format:check",
   "types:emit",
   "coverage:check",
   "package:quality",
@@ -52,14 +56,30 @@ if (!bunVersion) {
   fail("packageManager must pin Bun as bun@<version>");
 }
 
+// CI reads the Bun version straight from package.json#packageManager, so the
+// pin lives in one place. The Docker image tag is the one copy that can drift.
 const setupAction = readFileSync(".github/actions/setup-bun-turbo/action.yml", "utf8");
-const actionVersion = setupAction.match(/default: "([^"]+)"/)?.[1];
-if (bunVersion && actionVersion !== bunVersion) {
-  fail(`Bun version mismatch: packageManager uses ${bunVersion}, setup-bun-turbo default uses ${actionVersion ?? "unknown"}`);
+if (
+  !/bun-version-file:\s*\$\{\{\s*inputs\.bun-version-file\s*\}\}/.test(setupAction) ||
+  !/default: "package\.json"/.test(setupAction)
+) {
+  fail("setup-bun-turbo must install Bun via bun-version-file (default package.json) so CI matches packageManager");
+}
+
+const dockerfile = readFileSync("ci/Dockerfile", "utf8");
+for (const [, imageVersion] of dockerfile.matchAll(/^FROM oven\/bun:([0-9][^\s-]*)/gm)) {
+  if (bunVersion && imageVersion !== bunVersion) {
+    fail(`Bun version mismatch: packageManager uses ${bunVersion}, ci/Dockerfile uses oven/bun:${imageVersion}`);
+  }
 }
 
 const readme = readFileSync("README.md", "utf8");
-for (const script of ["bun run typecheck", "bun run lint:types", "bun run package:quality", "bun run validate:template"]) {
+for (const script of [
+  "bun run typecheck",
+  "bun run lint:types",
+  "bun run package:quality",
+  "bun run validate:template",
+]) {
   if (!readme.includes(script)) {
     fail(`README.md should mention ${script}`);
   }
@@ -79,7 +99,11 @@ if (!existsSync("docs/architecture-map.md")) {
 }
 
 const source = Bun.spawnSync({
-  cmd: ["bash", "-lc", "rg 'from \"\\.{1,2}/.*\\.(ts|js)\"|from '\\''\\.{1,2}/.*\\.(ts|js)'\\''' src test scripts examples --glob '*.ts'"],
+  cmd: [
+    "bash",
+    "-lc",
+    "rg 'from \"\\.{1,2}/.*\\.(ts|js)\"|from '\\''\\.{1,2}/.*\\.(ts|js)'\\''' src test scripts examples --glob '*.ts'",
+  ],
   stdout: "pipe",
   stderr: "pipe",
 });

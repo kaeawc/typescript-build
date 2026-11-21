@@ -3,13 +3,13 @@ name: "Dead Code Detection"
 on:
   schedule:
     # Monday 00:00 UTC
-    - cron: '0 0 * * 1'
+    - cron: "0 0 * * 1"
   workflow_dispatch:
     inputs:
       threshold:
-        description: 'Maximum allowed dead code issues (default: 10)'
+        description: "Maximum allowed dead code issues (default: 10)"
         required: false
-        default: '10'
+        default: "10"
 
 permissions:
   contents: read
@@ -22,14 +22,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Git Checkout"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           lfs: false
-
-      - name: "Install jq"
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
 
       - uses: ./.github/actions/setup-bun-turbo
 
@@ -37,7 +32,11 @@ jobs:
         run: |
           mkdir -p reports
           THRESHOLD=${{ github.event.inputs.threshold || '10' }}
-          bash scripts/detect-dead-code-ts.sh --output-dir=reports --threshold="$THRESHOLD" || echo "FAILED=true" >> "$GITHUB_ENV"
+          bun run dead-code:ts -- --max-issues="$THRESHOLD" \
+            --reporter symbols \
+            --reporter json --output-file json=reports/dead-code-report.json \
+            --reporter markdown --output-file markdown=reports/dead-code-report.md \
+            || echo "FAILED=true" >> "$GITHUB_ENV"
           exit 0
 
       - name: "Upload Dead Code Report (JSON)"

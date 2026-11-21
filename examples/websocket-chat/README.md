@@ -14,13 +14,13 @@ Typed WebSocket chat built on `BunWebSocketServer` + `MessageRouter`.
 
 ```ts
 type ChatRequest =
-  | { type: "join";    room: string; id?: string }
-  | { type: "leave";   room: string; id?: string }
+  | { type: "join"; room: string; id?: string }
+  | { type: "leave"; room: string; id?: string }
   | { type: "message"; room: string; text: string; id?: string };
 
 type ChatResponse =
-  | { type: "joined";   room: string; id?: string; success: true }
-  | { type: "left";     room: string; id?: string; success: true }
+  | { type: "joined"; room: string; id?: string; success: true }
+  | { type: "left"; room: string; id?: string; success: true }
   | { type: "incoming"; room: string; text: string; from: string; id?: string; success: true };
 ```
 

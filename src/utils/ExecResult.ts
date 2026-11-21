@@ -18,8 +18,14 @@ export const createExecResult = (stdout: string | Buffer, stderr: string | Buffe
   return {
     stdout: stdoutText,
     stderr: stderrText,
-    toString() { return stdoutText; },
-    trim() { return stdoutText.trim(); },
-    includes(searchString: string) { return stdoutText.includes(searchString); },
+    toString() {
+      return stdoutText;
+    },
+    trim() {
+      return stdoutText.trim();
+    },
+    includes(searchString: string) {
+      return stdoutText.includes(searchString);
+    },
   };
 };

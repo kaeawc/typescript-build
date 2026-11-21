@@ -17,9 +17,9 @@ export interface HealthReport {
 }
 
 const statusRank: Record<HealthStatus, number> = {
-  "healthy": 0,
-  "degraded": 1,
-  "unhealthy": 2,
+  healthy: 0,
+  degraded: 1,
+  unhealthy: 2,
 };
 
 export class HealthCheckRegistry {

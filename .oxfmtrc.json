@@ -1,0 +1,9 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 120,
+  "arrowParens": "avoid",
+  "quoteProps": "consistent",
+  "trailingComma": "all",
+  "sortPackageJson": false,
+  "ignorePatterns": ["dist/**", "coverage/**", "scratch/**", ".turbo/**", "bun.lock", "docs/architecture-map.md"]
+}

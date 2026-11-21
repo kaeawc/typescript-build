@@ -43,29 +43,30 @@ export class DefaultFileDownloader implements FileDownloader {
   }
 
   private async downloadWithCurl(url: string, destination: string): Promise<void> {
-    await execFileAsync("curl", [
-      "--fail",
-      "--location",
-      "--retry",
-      "3",
-      "--retry-delay",
-      "1",
-      "--silent",
-      "--show-error",
-      "-o",
-      destination,
-      url,
-    ], { timeout: 120000, maxBuffer: 10 * 1024 * 1024 });
+    await execFileAsync(
+      "curl",
+      [
+        "--fail",
+        "--location",
+        "--retry",
+        "3",
+        "--retry-delay",
+        "1",
+        "--silent",
+        "--show-error",
+        "-o",
+        destination,
+        url,
+      ],
+      { timeout: 120000, maxBuffer: 10 * 1024 * 1024 },
+    );
   }
 
   private async downloadWithWget(url: string, destination: string): Promise<void> {
-    await execFileAsync("wget", [
-      "--tries=3",
-      "--timeout=30",
-      "-O",
-      destination,
-      url,
-    ], { timeout: 120000, maxBuffer: 10 * 1024 * 1024 });
+    await execFileAsync("wget", ["--tries=3", "--timeout=30", "-O", destination, url], {
+      timeout: 120000,
+      maxBuffer: 10 * 1024 * 1024,
+    });
   }
 
   private async downloadWithNodeHttp(url: string, destination: string, redirectCount: number): Promise<void> {
@@ -77,35 +78,31 @@ export class DefaultFileDownloader implements FileDownloader {
 
     await new Promise<void>((resolve, reject) => {
       const transport = url.startsWith("https:") ? https : http;
-      const request = transport.get(
-        url,
-        { headers: { "User-Agent": "typescript-build" } },
-        response => {
-          const statusCode = response.statusCode ?? 0;
-          if (statusCode >= 300 && statusCode < 400 && response.headers.location) {
-            response.resume();
-            const redirectedUrl = new URL(response.headers.location, url).toString();
-            void this.downloadWithNodeHttp(redirectedUrl, destination, redirectCount + 1)
-              .then(resolve)
-              .catch(reject);
-            return;
-          }
-
-          if (statusCode < 200 || statusCode >= 300) {
-            response.resume();
-            reject(new Error(`Download failed with status ${statusCode} from ${url}`));
-            return;
-          }
-
-          const fileStream = createWriteStream(destination);
-          response.pipe(fileStream);
-          fileStream.on("finish", () => fileStream.close(() => resolve()));
-          fileStream.on("error", err => {
-            fileStream.close();
-            reject(err);
-          });
+      const request = transport.get(url, { headers: { "User-Agent": "typescript-build" } }, response => {
+        const statusCode = response.statusCode ?? 0;
+        if (statusCode >= 300 && statusCode < 400 && response.headers.location) {
+          response.resume();
+          const redirectedUrl = new URL(response.headers.location, url).toString();
+          void this.downloadWithNodeHttp(redirectedUrl, destination, redirectCount + 1)
+            .then(resolve)
+            .catch(reject);
+          return;
         }
-      );
+
+        if (statusCode < 200 || statusCode >= 300) {
+          response.resume();
+          reject(new Error(`Download failed with status ${statusCode} from ${url}`));
+          return;
+        }
+
+        const fileStream = createWriteStream(destination);
+        response.pipe(fileStream);
+        fileStream.on("finish", () => fileStream.close(() => resolve()));
+        fileStream.on("error", err => {
+          fileStream.close();
+          reject(err);
+        });
+      });
 
       request.setTimeout(30000, () => {
         request.destroy(new Error(`Download request timed out for ${url}`));
@@ -126,10 +123,12 @@ export class DefaultFileDownloader implements FileDownloader {
     }
 
     const combinedMessage = `${err.message ?? ""} ${err.stderr ?? ""}`.toLowerCase();
-    if (combinedMessage.includes("command not found") ||
+    if (
+      combinedMessage.includes("command not found") ||
       combinedMessage.includes("not recognized as an internal or external command") ||
       combinedMessage.includes(`${command}: not found`) ||
-      combinedMessage.includes(`not found: ${command}`)) {
+      combinedMessage.includes(`not found: ${command}`)
+    ) {
       return true;
     }
 

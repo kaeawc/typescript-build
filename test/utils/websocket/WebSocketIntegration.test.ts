@@ -20,7 +20,11 @@ let server: BunWebSocketServer<ChatRequest, ChatResponse>;
 let port: number;
 
 beforeEach(async () => {
-  const router = new MessageRouter<ChatRequest, import("../../../src/utils/websocket/WebSocketServer").WsConnection<ChatResponse>, void>()
+  const router = new MessageRouter<
+    ChatRequest,
+    import("../../../src/utils/websocket/WebSocketServer").WsConnection<ChatResponse>,
+    void
+  >()
     .on("join", (msg, conn) => {
       conn.subscribe(`room:${msg.room}`);
       conn.send({ type: "joined", room: msg.room, id: msg.id, success: true });
@@ -40,7 +44,9 @@ beforeEach(async () => {
     });
 
   server = new BunWebSocketServer<ChatRequest, ChatResponse>({
-    onMessage: async (msg, conn) => { await router.dispatch(msg, conn); },
+    onMessage: async (msg, conn) => {
+      await router.dispatch(msg, conn);
+    },
   });
 
   let started = false;
@@ -99,7 +105,9 @@ describe("BunWebSocketServer + BunWebSocketClient (integration)", () => {
       url: `ws://localhost:${port}`,
       autoReconnect: false,
       handlers: {
-        onPush: () => { /* captured via received array below */ },
+        onPush: () => {
+          /* captured via received array below */
+        },
       },
     });
 
@@ -108,7 +116,9 @@ describe("BunWebSocketServer + BunWebSocketClient (integration)", () => {
       url: `ws://localhost:${port}`,
       autoReconnect: false,
       handlers: {
-        onPush: msg => { received.push(msg); },
+        onPush: msg => {
+          received.push(msg);
+        },
       },
     });
 
@@ -147,7 +157,9 @@ describe("BunWebSocketServer + BunWebSocketClient (integration)", () => {
       url: `ws://localhost:${port}`,
       autoReconnect: false,
       handlers: {
-        onPhaseChange: phase => { phases.push(phase); },
+        onPhaseChange: phase => {
+          phases.push(phase);
+        },
       },
     });
 

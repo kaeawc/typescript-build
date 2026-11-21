@@ -60,11 +60,7 @@ describe("JsonSchemaValidator", () => {
     const v = new JsonSchemaValidator();
     v.addSchema(userSchema);
 
-    const source = [
-      "name: Ada",
-      "age: old",
-      "",
-    ].join("\n");
+    const source = ["name: Ada", "age: old", ""].join("\n");
 
     const result = v.validate("user", { name: "Ada", age: "old" }, source);
     const ageError = result.errors!.find(e => e.field === "age");

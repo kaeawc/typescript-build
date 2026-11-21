@@ -6,7 +6,7 @@ import { Logger as LoggerClass } from "../../src/logger";
  * logger and the array so tests can assert on emitted records.
  */
 export const buildCapturingLogger = (
-  overrides: { level?: "debug" | "info" | "warn" | "error" } = {}
+  overrides: { level?: "debug" | "info" | "warn" | "error" } = {},
 ): { logger: Logger; records: LogRecord[] } => {
   const records: LogRecord[] = [];
   const logger = new LoggerClass({

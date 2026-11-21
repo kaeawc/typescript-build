@@ -12,7 +12,9 @@ const stubStdout = (): { chunks: string[]; restore: () => void } => {
   }) as typeof process.stdout.write;
   return {
     chunks,
-    restore: () => { process.stdout.write = original; },
+    restore: () => {
+      process.stdout.write = original;
+    },
   };
 };
 

@@ -14,6 +14,19 @@ updates:
       - "dependencies"
     commit-message:
       prefix: "chore(deps)"
+    # Batch updates so the toolchain moves together (oxlint pins a peer range on
+    # oxlint-tsgolint) and routine bumps land as one reviewable PR.
+    groups:
+      oxc:
+        patterns: ["oxlint", "oxlint-tsgolint", "oxfmt", "@oxlint/*"]
+      typescript:
+        patterns: ["typescript", "@types/*"]
+      dev-tooling:
+        dependency-type: "development"
+        update-types: ["minor", "patch"]
+      runtime:
+        dependency-type: "production"
+        update-types: ["minor", "patch"]
 
   - package-ecosystem: "github-actions"
     directory: "/"

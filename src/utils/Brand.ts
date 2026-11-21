@@ -34,5 +34,7 @@ export type Brand<T, TBrand extends string> = T & { readonly __brand: TBrand };
  * // UserId("u-1") returns a branded string
  * ```
  */
-export const brand = <TBrand extends string>() =>
-  <T>(value: T): Brand<T, TBrand> => value as Brand<T, TBrand>;
+export const brand =
+  <TBrand extends string>() =>
+  <T>(value: T): Brand<T, TBrand> =>
+    value as Brand<T, TBrand>;

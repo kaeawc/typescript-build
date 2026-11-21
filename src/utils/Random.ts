@@ -99,12 +99,12 @@ export class SeededRandom implements Random {
   constructor(seed: number = 1) {
     // Fold the seed into a 32-bit integer so both positive and negative
     // seeds are accepted.
-    this.state = (Math.floor(seed) >>> 0) || 1;
+    this.state = Math.floor(seed) >>> 0 || 1;
   }
 
   /** Replace the current state with a new seed. */
   reseed(seed: number): void {
-    this.state = (Math.floor(seed) >>> 0) || 1;
+    this.state = Math.floor(seed) >>> 0 || 1;
   }
 
   next(): number {

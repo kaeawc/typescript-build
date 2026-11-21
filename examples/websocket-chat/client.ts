@@ -12,8 +12,12 @@ const main = async (): Promise<void> => {
     url: `ws://localhost:${port}`,
     autoReconnect: false,
     handlers: {
-      onPush: msg => { logger.info("push", msg); },
-      onPhaseChange: phase => { logger.debug("phase", { phase }); },
+      onPush: msg => {
+        logger.info("push", msg);
+      },
+      onPhaseChange: phase => {
+        logger.debug("phase", { phase });
+      },
     },
   });
 

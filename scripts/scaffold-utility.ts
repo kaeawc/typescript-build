@@ -68,10 +68,7 @@ export class Fake${name} implements ${name} {
 const contractTemplate = (name: string): string => `import { describe, expect, test } from "bun:test";
 import type { ${name} } from "../../src/utils/${name}";
 
-export const run${name}Contract = (
-  label: string,
-  make: () => ${name}
-): void => {
+export const run${name}Contract = (label: string, make: () => ${name}): void => {
   describe(\`${name} contract: \${label}\`, () => {
     test("returns undefined for missing keys", async () => {
       const subject = make();

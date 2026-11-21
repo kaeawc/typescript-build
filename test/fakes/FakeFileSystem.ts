@@ -2,7 +2,7 @@
  * Fake implementation of FileSystem for testing.
  * Stores files in memory instead of interacting with the real file system.
  */
-import { FileSystem } from "../../src/utils/filesystem/DefaultFileSystem";
+import type { FileSystem } from "../../src/utils/filesystem/DefaultFileSystem";
 
 export class FakeFileSystem implements FileSystem {
   private files: Map<string, string> = new Map();
@@ -102,7 +102,9 @@ export class FakeFileSystem implements FileSystem {
       return this.existsSync_shouldExist.get(normalizedPath) ?? false;
     }
 
-    return this.files.has(normalizedPath) || this.binaryFiles.has(normalizedPath) || this.directories.has(normalizedPath);
+    return (
+      this.files.has(normalizedPath) || this.binaryFiles.has(normalizedPath) || this.directories.has(normalizedPath)
+    );
   }
 
   async pathExists(filePath: string): Promise<boolean> {

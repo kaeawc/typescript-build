@@ -1,4 +1,5 @@
-import { Timer, defaultTimer } from "./SystemTimer";
+import type { Timer } from "./SystemTimer";
+import { defaultTimer } from "./SystemTimer";
 
 export interface RateLimiterOptions {
   readonly capacity: number;
@@ -84,7 +85,7 @@ export class RateLimiter {
       return;
     }
     const intervals = Math.floor(elapsed / this.refillIntervalMs);
-    this.availableTokens = Math.min(this.capacity, this.availableTokens + (intervals * this.refillTokens));
+    this.availableTokens = Math.min(this.capacity, this.availableTokens + intervals * this.refillTokens);
     this.lastRefillAt += intervals * this.refillIntervalMs;
   }
 

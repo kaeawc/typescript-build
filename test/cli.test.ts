@@ -115,7 +115,10 @@ describe("cli", () => {
     const runPromise = run(["serve", "--port", "9999"], {
       ...deps,
       createServer: () => fakeServer,
-      waitForShutdown: () => new Promise<void>(resolve => { shutdownResolve = resolve; }),
+      waitForShutdown: () =>
+        new Promise<void>(resolve => {
+          shutdownResolve = resolve;
+        }),
     });
 
     // Let the server start and register the shutdown waiter.

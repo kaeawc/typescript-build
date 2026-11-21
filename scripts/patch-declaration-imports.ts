@@ -20,8 +20,7 @@ const walk = (dir: string): string[] => {
   return files;
 };
 
-const hasExtension = (specifier: string): boolean =>
-  /\.[cm]?[jt]s$/.test(specifier) || specifier.endsWith(".json");
+const hasExtension = (specifier: string): boolean => /\.[cm]?[jt]s$/.test(specifier) || specifier.endsWith(".json");
 
 const patchSpecifier = (specifier: string): string => {
   if (!specifier.startsWith(".") || hasExtension(specifier)) {
@@ -30,11 +29,16 @@ const patchSpecifier = (specifier: string): string => {
   return `${specifier}.js`;
 };
 
-const patch = (source: string): string => source
-  .replace(/(from\s+["'])(\.{1,2}\/[^"']+)(["'])/g, (_match, prefix: string, specifier: string, suffix: string) =>
-    `${prefix}${patchSpecifier(specifier)}${suffix}`)
-  .replace(/(import\s*\(\s*["'])(\.{1,2}\/[^"']+)(["']\s*\))/g, (_match, prefix: string, specifier: string, suffix: string) =>
-    `${prefix}${patchSpecifier(specifier)}${suffix}`);
+const patch = (source: string): string =>
+  source
+    .replace(
+      /(from\s+["'])(\.{1,2}\/[^"']+)(["'])/g,
+      (_match, prefix: string, specifier: string, suffix: string) => `${prefix}${patchSpecifier(specifier)}${suffix}`,
+    )
+    .replace(
+      /(import\s*\(\s*["'])(\.{1,2}\/[^"']+)(["']\s*\))/g,
+      (_match, prefix: string, specifier: string, suffix: string) => `${prefix}${patchSpecifier(specifier)}${suffix}`,
+    );
 
 let patched = 0;
 for (const file of walk(distDir)) {

@@ -44,9 +44,11 @@ export class ShutdownCoordinator {
   constructor(options: ShutdownCoordinatorOptions = {}) {
     this.hookTimeoutMs = options.hookTimeoutMs ?? 10_000;
     this.timer = options.timer ?? defaultTimer;
-    this.onHookError = options.onHookError ?? ((name, error) => {
-      console.error(`[ShutdownCoordinator] hook '${name}' failed: ${formatError(error)}`);
-    });
+    this.onHookError =
+      options.onHookError ??
+      ((name, error) => {
+        console.error(`[ShutdownCoordinator] hook '${name}' failed: ${formatError(error)}`);
+      });
   }
 
   /** Register a teardown hook. Returns a deregister function. */

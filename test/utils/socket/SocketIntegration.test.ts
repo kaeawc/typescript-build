@@ -95,7 +95,7 @@ describe("SocketClient + RequestResponseSocketServer", () => {
       client.request({ kind: "echo", text: "c" }),
     ]);
 
-    const texts = responses.map(r => r.echoed).sort();
+    const texts = responses.map(r => r.echoed).toSorted((a, b) => (a ?? "").localeCompare(b ?? ""));
     expect(texts).toEqual(["a", "b", "c"]);
     await client.close();
   });

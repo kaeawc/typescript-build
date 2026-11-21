@@ -8,7 +8,7 @@ export interface HttpClientContractFactory {
    * tests just call the client and assert on results.
    */
   makeWithResponses(
-    responses: ReadonlyArray<{ status: number; body: string; headers?: Record<string, string> }>
+    responses: ReadonlyArray<{ status: number; body: string; headers?: Record<string, string> }>,
   ): HttpClient;
 }
 
@@ -16,10 +16,7 @@ export interface HttpClientContractFactory {
  * HttpClient contract. Every implementation must route requests, preserve
  * status/body/headers, and handle repeated calls in a sane order.
  */
-export const runHttpClientContract = (
-  description: string,
-  factory: HttpClientContractFactory
-): void => {
+export const runHttpClientContract = (description: string, factory: HttpClientContractFactory): void => {
   describe(`HttpClient contract — ${description}`, () => {
     test("sends a request and returns the mapped response", async () => {
       const client = factory.makeWithResponses([

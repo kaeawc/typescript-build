@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { createHonoServer, HonoHttpServer } from "../../src/server/HonoHttpServer";
+import type { HonoHttpServer } from "../../src/server/HonoHttpServer";
+import { createHonoServer } from "../../src/server/HonoHttpServer";
 import { NodeHttpClient } from "../../src/utils/HttpClient";
 import { jsonResponse } from "../../src/server/HttpServer";
 import { FakeHttpServer } from "../fakes/FakeHttpServer";

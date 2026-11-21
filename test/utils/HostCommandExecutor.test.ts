@@ -42,9 +42,15 @@ describe("FakeHostCommandExecutor", () => {
     fake.setCommandResponse("ls", {
       stdout: "a.txt",
       stderr: "",
-      toString() { return "a.txt"; },
-      trim() { return "a.txt"; },
-      includes(s: string) { return "a.txt".includes(s); },
+      toString() {
+        return "a.txt";
+      },
+      trim() {
+        return "a.txt";
+      },
+      includes(s: string) {
+        return "a.txt".includes(s);
+      },
     });
 
     const result = await fake.executeCommand("ls", ["-la"]);
@@ -56,9 +62,15 @@ describe("FakeHostCommandExecutor", () => {
     fake.setDefaultResponse({
       stdout: "default",
       stderr: "",
-      toString() { return "default"; },
-      trim() { return "default"; },
-      includes(s: string) { return "default".includes(s); },
+      toString() {
+        return "default";
+      },
+      trim() {
+        return "default";
+      },
+      includes(s: string) {
+        return "default".includes(s);
+      },
     });
 
     const result = await fake.executeCommand("anything");

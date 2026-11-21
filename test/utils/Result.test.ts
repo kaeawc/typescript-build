@@ -71,7 +71,9 @@ describe("Result", () => {
     const r1 = tryCatch(() => 42);
     expect(r1.ok).toBe(true);
 
-    const r2 = tryCatch(() => { throw new Error("boom"); });
+    const r2 = tryCatch(() => {
+      throw new Error("boom");
+    });
     expect(r2.ok).toBe(false);
     if (!r2.ok) {
       expect(r2.error.message).toBe("boom");
@@ -79,7 +81,9 @@ describe("Result", () => {
   });
 
   test("tryCatchAsync wraps rejected promises as Err", async () => {
-    const r = await tryCatchAsync(async () => { throw new Error("async boom"); });
+    const r = await tryCatchAsync(async () => {
+      throw new Error("async boom");
+    });
     expect(r.ok).toBe(false);
     if (!r.ok) {
       expect(r.error.message).toBe("async boom");

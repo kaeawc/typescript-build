@@ -32,11 +32,12 @@ add_check() {
 
 add_check "shellcheck" "\"$PROJECT_ROOT/scripts/shellcheck/validate_shell_scripts.sh\"" "lint,shell" "Validate shell scripts with shellcheck"
 add_check "typecheck" "cd \"$PROJECT_ROOT\" && bun run typecheck" "lint,typescript" "Run full TypeScript semantic checks"
-add_check "lint-types" "cd \"$PROJECT_ROOT\" && bun run lint:types" "lint,typescript" "Run type-aware ESLint checks"
+add_check "lint-types" "cd \"$PROJECT_ROOT\" && bun run lint:types" "lint,typescript" "Run type-aware oxlint checks (tsgolint)"
+add_check "format" "cd \"$PROJECT_ROOT\" && bun run format:check" "lint,format" "Check formatting with oxfmt"
 add_check "lychee" "\"$PROJECT_ROOT/scripts/lychee/validate_lychee.sh\"" "docs,links" "Validate documentation links"
 add_check "dependabot" "\"$PROJECT_ROOT/scripts/validate_dependabot.sh\"" "config,yaml" "Validate Dependabot config"
 add_check "hadolint" "\"$PROJECT_ROOT/scripts/hadolint/validate_hadolint.sh\"" "lint,docker" "Validate Dockerfiles with hadolint"
-add_check "dead-code" "bash \"$PROJECT_ROOT/scripts/detect-dead-code-ts.sh\"" "lint,typescript" "Detect dead TypeScript code via ts-prune + knip"
+add_check "dead-code" "cd \"$PROJECT_ROOT\" && bun run dead-code:ts" "lint,typescript" "Detect unused files, exports, and dependencies via knip"
 add_check "template-health" "cd \"$PROJECT_ROOT\" && bun run validate:template" "config,agents" "Validate AI-first template invariants"
 
 print_usage() {

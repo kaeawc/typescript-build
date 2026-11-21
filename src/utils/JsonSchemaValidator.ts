@@ -102,14 +102,14 @@ const formatErrors = (ajvErrors: ErrorObject[], sourceText?: string): Validation
     const params = err.params as Record<string, unknown>;
 
     if (err.keyword === "additionalProperties") {
-      message = `Unknown property '${params["additionalProperty"]}'`;
+      message = `Unknown property '${String(params["additionalProperty"])}'`;
     } else if (err.keyword === "required") {
-      message = `Missing required property '${params["missingProperty"]}'`;
+      message = `Missing required property '${String(params["missingProperty"])}'`;
     } else if (err.keyword === "enum") {
       const allowed = params["allowedValues"] as unknown[];
       message = `Must be one of: ${allowed.join(", ")}`;
     } else if (err.keyword === "type") {
-      message = `Must be of type '${params["type"]}', got ${typeof err.data}`;
+      message = `Must be of type '${String(params["type"])}', got ${typeof err.data}`;
     } else if (err.keyword === "minItems") {
       const limit = params["limit"] as number;
       message = `Must have at least ${limit} item${limit !== 1 ? "s" : ""}`;
@@ -161,5 +161,4 @@ const findLineNumber = (source: string, fieldPath: string): { line: number; colu
   return undefined;
 };
 
-const escapeRegex = (value: string): string =>
-  value.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
+const escapeRegex = (value: string): string => value.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");

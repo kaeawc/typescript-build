@@ -26,7 +26,7 @@ describe("DefaultRetryExecutor", () => {
         calls++;
         throw new Error(`boom ${calls}`);
       },
-      { maxAttempts: 3, delays: 10 }
+      { maxAttempts: 3, delays: 10 },
     );
 
     expect(result.success).toBe(false);
@@ -46,7 +46,7 @@ describe("DefaultRetryExecutor", () => {
         seen.push(attempt);
         throw new Error("fail");
       },
-      { maxAttempts: 3, delays: [10, 20] }
+      { maxAttempts: 3, delays: [10, 20] },
     );
 
     expect(seen).toEqual([1, 2, 3]);
@@ -67,7 +67,7 @@ describe("DefaultRetryExecutor", () => {
         maxAttempts: 5,
         delays: 10,
         shouldRetry: err => !err.message.includes("fatal"),
-      }
+      },
     );
 
     expect(result.success).toBe(false);
@@ -92,10 +92,13 @@ describe("DefaultRetryExecutor", () => {
         maxAttempts: 3,
         delays: attempt => attempt * 5,
         onRetry: (_err, attempt, delay) => onRetry.calls.push({ attempt, delay }),
-      }
+      },
     );
 
-    expect(onRetry.calls).toEqual([{ attempt: 1, delay: 5 }, { attempt: 2, delay: 10 }]);
+    expect(onRetry.calls).toEqual([
+      { attempt: 1, delay: 5 },
+      { attempt: 2, delay: 10 },
+    ]);
   });
 
   test("executeOrThrow throws the final error", async () => {
@@ -104,7 +107,12 @@ describe("DefaultRetryExecutor", () => {
     const retry = new DefaultRetryExecutor(timer);
 
     await expect(
-      retry.executeOrThrow(async () => { throw new Error("nope"); }, { maxAttempts: 2, delays: 0 })
+      retry.executeOrThrow(
+        async () => {
+          throw new Error("nope");
+        },
+        { maxAttempts: 2, delays: 0 },
+      ),
     ).rejects.toThrow(/nope/);
   });
 
@@ -116,10 +124,7 @@ describe("DefaultRetryExecutor", () => {
     const controller = new AbortController();
     controller.abort();
 
-    const result = await retry.execute(
-      async () => "never-runs",
-      { signal: controller.signal, maxAttempts: 3 }
-    );
+    const result = await retry.execute(async () => "never-runs", { signal: controller.signal, maxAttempts: 3 });
 
     expect(result.success).toBe(false);
     expect(result.error?.message).toMatch(/abort/i);

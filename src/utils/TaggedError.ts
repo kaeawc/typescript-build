@@ -46,9 +46,6 @@ export abstract class TaggedError<TTag extends string> extends Error {
 /**
  * Type guard: is the value a `TaggedError` with the given tag?
  */
-export const isTagged = <TTag extends string>(
-  value: unknown,
-  tag: TTag
-): value is TaggedError<TTag> => {
+export const isTagged = <TTag extends string>(value: unknown, tag: TTag): value is TaggedError<TTag> => {
   return value instanceof TaggedError && value._tag === tag;
 };

@@ -54,7 +54,7 @@ export const runRandomContract = (description: string, makeRandom: () => Random)
       const original = [1, 2, 3, 4, 5, 6, 7, 8];
       const shuffled = rng.shuffle(original);
       expect(shuffled.length).toBe(original.length);
-      expect(shuffled.slice().sort()).toEqual(original.slice().sort());
+      expect(shuffled.toSorted((a, b) => a - b)).toEqual(original.toSorted((a, b) => a - b));
     });
 
     test("uuid() returns a v4-shaped UUID string", () => {

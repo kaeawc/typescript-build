@@ -18,23 +18,23 @@ describe("AsyncMutex", () => {
 
     await Promise.all([work("a", 1), work("b", 1), work("c", 1)]);
 
-    expect(log).toEqual([
-      "enter-a", "exit-a",
-      "enter-b", "exit-b",
-      "enter-c", "exit-c",
-    ]);
+    expect(log).toEqual(["enter-a", "exit-a", "enter-b", "exit-b", "enter-c", "exit-c"]);
   });
 
   test("releases the lock when the body throws", async () => {
     const mutex = new AsyncMutex();
     await expect(
-      mutex.withLock(async () => { throw new Error("boom"); })
+      mutex.withLock(async () => {
+        throw new Error("boom");
+      }),
     ).rejects.toThrow(/boom/);
 
     expect(mutex.isLocked()).toBe(false);
 
     let ran = false;
-    await mutex.withLock(async () => { ran = true; });
+    await mutex.withLock(async () => {
+      ran = true;
+    });
     expect(ran).toBe(true);
   });
 
@@ -95,7 +95,9 @@ describe("Semaphore", () => {
   test("releases the permit on thrown body", async () => {
     const sem = new Semaphore(1);
     await expect(
-      sem.withPermit(async () => { throw new Error("x"); })
+      sem.withPermit(async () => {
+        throw new Error("x");
+      }),
     ).rejects.toThrow(/x/);
 
     expect(sem.availablePermits()).toBe(1);

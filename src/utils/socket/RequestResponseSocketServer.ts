@@ -1,4 +1,4 @@
-import { Socket } from "node:net";
+import type { Socket } from "node:net";
 import { type Timer, defaultTimer } from "../SystemTimer";
 import { BaseSocketServer } from "./BaseSocketServer";
 import type { SocketRequest, SocketResponse } from "./SocketServerTypes";
@@ -53,7 +53,7 @@ export abstract class RequestResponseSocketServer<
     } catch (error) {
       const errorResponse = this.createErrorResponse(
         request.id,
-        error instanceof Error ? error.message : String(error)
+        error instanceof Error ? error.message : String(error),
       );
       this.sendJson(socket, errorResponse);
     }

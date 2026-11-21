@@ -1,8 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { EnvError, ProcessEnvReader } from "../../src/utils/EnvReader";
 
-const make = (source: Record<string, string | undefined>): ProcessEnvReader =>
-  new ProcessEnvReader(source);
+const make = (source: Record<string, string | undefined>): ProcessEnvReader => new ProcessEnvReader(source);
 
 describe("ProcessEnvReader", () => {
   test("get returns the raw value or undefined", () => {

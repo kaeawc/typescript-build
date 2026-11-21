@@ -6,10 +6,7 @@ type AbortContextState = {
 
 const abortContext = new AsyncLocalStorage<AbortContextState>();
 
-export const runWithAbortSignal = async <T>(
-  signal: AbortSignal | undefined,
-  fn: () => Promise<T>
-): Promise<T> => {
+export const runWithAbortSignal = async <T>(signal: AbortSignal | undefined, fn: () => Promise<T>): Promise<T> => {
   return abortContext.run({ signal }, fn);
 };
 

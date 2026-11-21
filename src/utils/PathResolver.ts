@@ -1,8 +1,11 @@
 import path from "node:path";
-import { FileSystem } from "./filesystem/DefaultFileSystem";
+import type { FileSystem } from "./filesystem/DefaultFileSystem";
 
 export class PathTraversalError extends Error {
-  constructor(readonly root: string, readonly requestedPath: string) {
+  constructor(
+    readonly root: string,
+    readonly requestedPath: string,
+  ) {
     super(`Resolved path escapes root: ${requestedPath}`);
     this.name = "PathTraversalError";
   }
@@ -14,8 +17,7 @@ export interface PathResolver {
   isInsideRoot(candidatePath: string): boolean;
 }
 
-export const normalizeRoot = (root: string): string =>
-  path.resolve(root);
+export const normalizeRoot = (root: string): string => path.resolve(root);
 
 export const isPathInside = (root: string, candidatePath: string): boolean => {
   const normalizedRoot = normalizeRoot(root);
@@ -49,7 +51,7 @@ export const createPathResolver = (root: string): PathResolver => {
 export const findNearestAncestorContaining = async (
   startDirectory: string,
   fileName: string,
-  fileSystem: Pick<FileSystem, "pathExists">
+  fileSystem: Pick<FileSystem, "pathExists">,
 ): Promise<string | undefined> => {
   let current = path.resolve(startDirectory);
   while (true) {

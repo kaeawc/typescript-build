@@ -24,12 +24,7 @@ describe("init-template", () => {
   });
 
   test("parses explicit bin and description options", () => {
-    expect(parseTemplateInitArgs([
-      "--name=my-app",
-      "--bin",
-      "appctl",
-      "--description=My app description.",
-    ])).toEqual({
+    expect(parseTemplateInitArgs(["--name=my-app", "--bin", "appctl", "--description=My app description."])).toEqual({
       packageName: "my-app",
       binName: "appctl",
       dryRun: false,
@@ -47,15 +42,18 @@ describe("init-template", () => {
   });
 
   test("updates package name, description, and template binary entry", () => {
-    const next = updatePackageJson({
-      name: "typescript-build",
-      description: "Template description.",
-      version: "0.0.0",
-      bin: {
-        "typescript-build": "./dist/src/index.js",
-        "existing-tool": "./dist/existing.js",
+    const next = updatePackageJson(
+      {
+        name: "typescript-build",
+        description: "Template description.",
+        version: "0.0.0",
+        bin: {
+          "typescript-build": "./dist/src/index.js",
+          "existing-tool": "./dist/existing.js",
+        },
       },
-    }, baseOptions);
+      baseOptions,
+    );
 
     expect(next).toEqual({
       name: "my-app",
@@ -69,15 +67,18 @@ describe("init-template", () => {
   });
 
   test("keeps the existing description when no description is provided", () => {
-    const next = updatePackageJson({
-      name: "typescript-build",
-      description: "Template description.",
-      bin: "dist/src/index.js",
-    }, {
-      packageName: "my-app",
-      binName: "my-app",
-      dryRun: false,
-    });
+    const next = updatePackageJson(
+      {
+        name: "typescript-build",
+        description: "Template description.",
+        bin: "dist/src/index.js",
+      },
+      {
+        packageName: "my-app",
+        binName: "my-app",
+        dryRun: false,
+      },
+    );
 
     expect(next.description).toBe("Template description.");
     expect(next.bin).toEqual({ "my-app": "dist/src/index.js" });
@@ -110,11 +111,13 @@ Run the checks.
 Keep this paragraph.
 `;
 
-    expect(updateMarkdownIntro(markdown, {
-      packageName: "my-app",
-      binName: "my-app",
-      dryRun: false,
-    })).toBe(`# my-app
+    expect(
+      updateMarkdownIntro(markdown, {
+        packageName: "my-app",
+        binName: "my-app",
+        dryRun: false,
+      }),
+    ).toBe(`# my-app
 
 Keep this paragraph.
 `);

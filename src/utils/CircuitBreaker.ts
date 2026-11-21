@@ -1,4 +1,5 @@
-import { Timer, defaultTimer } from "./SystemTimer";
+import type { Timer } from "./SystemTimer";
+import { defaultTimer } from "./SystemTimer";
 
 export type CircuitBreakerState = "closed" | "open" | "halfOpen";
 

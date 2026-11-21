@@ -1,4 +1,4 @@
-import { type Schema } from "ajv";
+import type { Schema } from "ajv";
 import { CircuitBreaker } from "../../src/utils/CircuitBreaker";
 import type { HttpClient } from "../../src/utils/HttpClient";
 import { NodeHttpClient } from "../../src/utils/HttpClient";
@@ -19,14 +19,14 @@ export class ApiClientError extends TaggedError<"ApiClientError"> {
 }
 
 const userProfileSchema = {
-  "$id": "example-user-profile",
-  "type": "object",
-  "required": ["id", "name"],
-  "properties": {
-    "id": { "type": "string", "minLength": 1 },
-    "name": { "type": "string", "minLength": 1 },
+  $id: "example-user-profile",
+  type: "object",
+  required: ["id", "name"],
+  properties: {
+    id: { type: "string", minLength: 1 },
+    name: { type: "string", minLength: 1 },
   },
-  "additionalProperties": false,
+  additionalProperties: false,
 } satisfies Schema;
 
 const parseUserProfile = createSchemaParser<UserProfile>(userProfileSchema);
@@ -35,7 +35,7 @@ export class UsersApiClient {
   constructor(
     private readonly baseUrl: string,
     private readonly httpClient: HttpClient,
-    private readonly circuitBreaker: CircuitBreaker = new CircuitBreaker()
+    private readonly circuitBreaker: CircuitBreaker = new CircuitBreaker(),
   ) {}
 
   async getUser(id: string): Promise<Result<UserProfile, ApiClientError>> {
@@ -71,5 +71,5 @@ export const createUsersApiClient = (baseUrl: string): UsersApiClient =>
   new UsersApiClient(
     baseUrl,
     new RetryingHttpClient(new NodeHttpClient(), { delays: [100, 250, 500] }),
-    new CircuitBreaker({ failureThreshold: 5, resetTimeoutMs: 10_000 })
+    new CircuitBreaker({ failureThreshold: 5, resetTimeoutMs: 10_000 }),
   );

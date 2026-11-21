@@ -1,6 +1,7 @@
-import { type Schema } from "ajv";
+import type { Schema } from "ajv";
 import { JsonSchemaValidator, type ValidationError } from "./JsonSchemaValidator";
-import { Result, err, ok } from "./Result";
+import type { Result } from "./Result";
+import { err, ok } from "./Result";
 
 export interface JsonParseError {
   readonly message: string;
@@ -22,10 +23,11 @@ export const parseJsonObject = (source: string): Result<Record<string, unknown>,
 
 export const createSchemaParser = <T>(
   schema: Schema,
-  options: { key?: string; validator?: JsonSchemaValidator } = {}
+  options: { key?: string; validator?: JsonSchemaValidator } = {},
 ): ((value: unknown, sourceText?: string) => Result<T, ValidationError[]>) => {
   const validator = options.validator ?? new JsonSchemaValidator();
-  const key = options.key ?? (typeof schema === "object" && schema !== null ? (schema as { $id?: string }).$id : undefined);
+  const key =
+    options.key ?? (typeof schema === "object" && schema !== null ? (schema as { $id?: string }).$id : undefined);
   if (!key) {
     throw new Error("createSchemaParser requires a schema $id or explicit key");
   }

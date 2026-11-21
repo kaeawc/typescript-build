@@ -110,15 +110,29 @@ class NoopSpan implements Span {
   public readonly parentSpanId: string | null;
   private ended: boolean = false;
 
-  constructor(public readonly name: string, parent?: Span, _attributes?: SpanAttributes) {
+  constructor(
+    public readonly name: string,
+    parent?: Span,
+    _attributes?: SpanAttributes,
+  ) {
     this.parentSpanId = parent?.spanId ?? null;
   }
 
-  setAttribute(_key: string, _value: SpanAttributeValue): void { /* noop */ }
-  setAttributes(_values: SpanAttributes): void { /* noop */ }
-  addEvent(_name: string, _attributes?: SpanAttributes): void { /* noop */ }
-  setStatus(_status: SpanStatus): void { /* noop */ }
-  recordException(_error: Error): void { /* noop */ }
+  setAttribute(_key: string, _value: SpanAttributeValue): void {
+    /* noop */
+  }
+  setAttributes(_values: SpanAttributes): void {
+    /* noop */
+  }
+  addEvent(_name: string, _attributes?: SpanAttributes): void {
+    /* noop */
+  }
+  setStatus(_status: SpanStatus): void {
+    /* noop */
+  }
+  recordException(_error: Error): void {
+    /* noop */
+  }
 
   end(): void {
     this.ended = true;
@@ -148,9 +162,7 @@ export class RecordingTracer implements Tracer {
   }
 
   startSpan(name: string, options: StartSpanOptions = {}): Span {
-    const parent = options.parent === null
-      ? null
-      : options.parent ?? this.currentSpan();
+    const parent = options.parent === null ? null : (options.parent ?? this.currentSpan());
     const traceId = parent ? parent.traceId : `trace-${this.nextTraceIdNum++}`;
     const spanId = `span-${this.nextSpanIdNum++}`;
     const span = new RecordingSpan({
@@ -162,7 +174,9 @@ export class RecordingTracer implements Tracer {
       startMs: this.clock.nowMs(),
       initialAttributes: options.attributes ?? {},
       clock: this.clock,
-      onEnd: snapshot => { this.finished.push(snapshot); },
+      onEnd: snapshot => {
+        this.finished.push(snapshot);
+      },
     });
     return span;
   }

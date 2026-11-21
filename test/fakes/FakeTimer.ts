@@ -1,4 +1,4 @@
-import { Timer } from "../../src/utils/SystemTimer";
+import type { Timer } from "../../src/utils/SystemTimer";
 
 /**
  * Pending sleep call information
@@ -79,7 +79,7 @@ export class FakeTimer implements Timer {
       this.pendingSleeps.push({
         ms,
         resolve,
-        timestamp: this.currentTime
+        timestamp: this.currentTime,
       });
     });
   }
@@ -92,24 +92,16 @@ export class FakeTimer implements Timer {
     this.currentTime += ms;
 
     // Handle pending sleeps
-    const toResolve = this.pendingSleeps.filter(
-      sleep => this.currentTime - sleep.timestamp >= sleep.ms
-    );
+    const toResolve = this.pendingSleeps.filter(sleep => this.currentTime - sleep.timestamp >= sleep.ms);
 
-    this.pendingSleeps = this.pendingSleeps.filter(
-      sleep => this.currentTime - sleep.timestamp < sleep.ms
-    );
+    this.pendingSleeps = this.pendingSleeps.filter(sleep => this.currentTime - sleep.timestamp < sleep.ms);
 
     toResolve.forEach(sleep => sleep.resolve());
 
     // Handle pending timeouts
-    const toFireTimeouts = this.pendingTimeouts.filter(
-      timeout => this.currentTime - timeout.timestamp >= timeout.ms
-    );
+    const toFireTimeouts = this.pendingTimeouts.filter(timeout => this.currentTime - timeout.timestamp >= timeout.ms);
 
-    this.pendingTimeouts = this.pendingTimeouts.filter(
-      timeout => this.currentTime - timeout.timestamp < timeout.ms
-    );
+    this.pendingTimeouts = this.pendingTimeouts.filter(timeout => this.currentTime - timeout.timestamp < timeout.ms);
 
     toFireTimeouts.forEach(timeout => timeout.callback());
 
@@ -265,7 +257,7 @@ export class FakeTimer implements Timer {
       id,
       callback,
       ms,
-      timestamp: this.currentTime
+      timestamp: this.currentTime,
     });
     return id;
   }
@@ -297,7 +289,7 @@ export class FakeTimer implements Timer {
       callback,
       ms,
       timestamp: this.currentTime,
-      lastFiredAt: this.currentTime
+      lastFiredAt: this.currentTime,
     });
     return id;
   }
@@ -365,7 +357,9 @@ export class FakeTimer implements Timer {
       await new Promise(resolve => setImmediate(resolve));
     }
 
-    if (error) {throw error;}
+    if (error) {
+      throw error;
+    }
     return result as T;
   }
 }

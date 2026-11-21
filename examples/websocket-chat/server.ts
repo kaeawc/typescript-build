@@ -33,10 +33,18 @@ const main = async (): Promise<void> => {
     });
 
   const server = new BunWebSocketServer<ChatRequest, ChatResponse>({
-    onOpen: conn => { logger.info("open", { conn: conn.id }); },
-    onMessage: async (msg, conn) => { await router.dispatch(msg, conn); },
-    onClose: conn => { logger.info("close", { conn: conn.id }); },
-    onError: (conn, error) => { logger.error("ws error", { conn: conn.id, message: error.message }); },
+    onOpen: conn => {
+      logger.info("open", { conn: conn.id });
+    },
+    onMessage: async (msg, conn) => {
+      await router.dispatch(msg, conn);
+    },
+    onClose: conn => {
+      logger.info("close", { conn: conn.id });
+    },
+    onError: (conn, error) => {
+      logger.error("ws error", { conn: conn.id, message: error.message });
+    },
   });
 
   await server.start(port);

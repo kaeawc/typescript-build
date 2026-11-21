@@ -55,7 +55,7 @@ export class Logger {
       time: this.clock().toISOString(),
       level,
       msg,
-      ...(fields ?? {}),
+      ...fields,
     };
     this.sink(record);
   }

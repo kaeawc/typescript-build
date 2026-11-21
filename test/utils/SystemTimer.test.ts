@@ -27,7 +27,9 @@ describe("SystemTimer", () => {
   test("clearTimeout prevents firing", async () => {
     const timer = new SystemTimer();
     let fired = false;
-    const handle = timer.setTimeout(() => { fired = true; }, 1);
+    const handle = timer.setTimeout(() => {
+      fired = true;
+    }, 1);
     timer.clearTimeout(handle);
     await timer.sleep(10);
     expect(fired).toBe(false);
@@ -36,7 +38,9 @@ describe("SystemTimer", () => {
   test("setInterval + clearInterval", async () => {
     const timer = new SystemTimer();
     let ticks = 0;
-    const handle = timer.setInterval(() => { ticks += 1; }, 5);
+    const handle = timer.setInterval(() => {
+      ticks += 1;
+    }, 5);
     await timer.sleep(25);
     timer.clearInterval(handle);
     const seen = ticks;
