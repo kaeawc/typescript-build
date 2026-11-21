@@ -61,6 +61,11 @@ export class Logger {
   }
 }
 
+/** Writes every record to stderr. Use when stdout carries a protocol (MCP over stdio). */
+export const stderrSink = (record: LogRecord): void => {
+  process.stderr.write(`${JSON.stringify(record)}\n`);
+};
+
 const defaultSink = (record: LogRecord): void => {
   const stream = record.level === "error" || record.level === "warn" ? process.stderr : process.stdout;
   stream.write(`${JSON.stringify(record)}\n`);

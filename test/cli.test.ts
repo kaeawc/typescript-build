@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, test } from "bun:test";
+import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 import { run } from "../src/cli";
 import { Logger, type LogRecord } from "../src/logger";
 import type { AppConfig } from "../src/config";
@@ -132,6 +133,48 @@ describe("cli", () => {
 
     expect(result.exitCode).toBe(0);
     expect(fakeServer.isStarted()).toBe(false);
+  });
+
+  test("serve exposes the MCP server at /mcp over real HTTP", async () => {
+    const deps = buildDeps();
+    let toolNames: string[] = [];
+    const result = await run(["serve", "--port", "0"], {
+      ...deps,
+      waitForShutdown: async () => {
+        const listening = deps.records.find(record => record.msg === "serve: listening");
+        const client = new Client(
+          { name: "cli-test", version: "1.0.0" },
+          { versionNegotiation: { mode: { pin: "2026-07-28" } } },
+        );
+        await client.connect(
+          new StreamableHTTPClientTransport(new URL(`http://localhost:${String(listening?.["port"])}/mcp`)),
+        );
+        toolNames = (await client.listTools()).tools.map(tool => tool.name);
+        await client.close();
+      },
+    });
+    stdio.restore();
+
+    expect(result.exitCode).toBe(0);
+    expect(toolNames).toContain("add_note");
+  });
+
+  test("mcp starts the stdio server and closes it on shutdown", async () => {
+    const deps = buildDeps();
+    const events: string[] = [];
+    const result = await run(["mcp"], {
+      ...deps,
+      startMcpStdio: async () => {
+        events.push("start");
+        return { close: async () => void events.push("close") };
+      },
+      waitForShutdown: async () => void events.push("wait"),
+    });
+    stdio.restore();
+
+    expect(result.exitCode).toBe(0);
+    expect(events).toEqual(["start", "wait", "close"]);
+    expect(stdio.stdout).toEqual([]);
   });
 
   test("serve rejects an invalid port", async () => {
