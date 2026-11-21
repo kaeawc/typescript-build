@@ -7,7 +7,7 @@
     "test": "bun test",
     "test:coverage": "bun test --coverage",
     "test:timing": "bun scripts/check-test-timing.ts",
-    "typecheck": "tsc",
+    "typecheck": "tsc && tsc -p tsconfig.view.json",
     "types:emit": "tsc -p tsconfig.declarations.json && bun scripts/patch-declaration-imports.ts",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
@@ -69,6 +69,7 @@
     "@arethetypeswrong/cli": "^0.18.5",
     "@commitlint/cli": "^21.2.4",
     "@commitlint/config-conventional": "^21.2.4",
+    "@modelcontextprotocol/client": "^2.4.0",
     "@oxlint/plugins": "^1.94.0",
     "@types/bun": "^1.4.5",
     "@types/node": "^26.6.6",
@@ -83,9 +84,12 @@
     "typescript": "^7.0.2"
   },
   "dependencies": {
+    "@modelcontextprotocol/ext-apps": "^2.0.4",
+    "@modelcontextprotocol/server": "^2.4.0",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
     "hono": "^4.13.19",
-    "js-yaml": "^5.5.0"
+    "js-yaml": "^5.5.0",
+    "zod": "^4"
   }
 }

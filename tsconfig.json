@@ -31,5 +31,5 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": ["src/**/*.ts", "test/**/*.ts", "scripts/**/*.ts", "examples/**/*.ts", "build.ts"],
-  "exclude": ["node_modules", "dist", "coverage", "scratch"]
+  "exclude": ["node_modules", "dist", "coverage", "scratch", "src/mcp/apps/view"]
 }

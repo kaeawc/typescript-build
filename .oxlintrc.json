@@ -77,6 +77,7 @@
         "elements": {
           "utils": ["src/utils/"],
           "server": ["src/server/"],
+          "mcp": ["src/mcp/"],
           "cli": ["src/cli"],
           "composition": ["src/composition"],
           "config": ["src/config"],
@@ -85,10 +86,11 @@
           "examples": ["examples/"]
         },
         "disallow": {
-          "utils": ["server", "cli", "composition", "examples"],
-          "server": ["cli", "composition", "examples"],
-          "config": ["server", "cli", "composition", "examples", "utils"],
-          "logger": ["server", "cli", "composition", "examples", "utils"],
+          "utils": ["server", "mcp", "cli", "composition", "examples"],
+          "server": ["mcp", "cli", "composition", "examples"],
+          "mcp": ["cli", "composition", "examples"],
+          "config": ["server", "mcp", "cli", "composition", "examples", "utils"],
+          "logger": ["server", "mcp", "cli", "composition", "examples", "utils"],
           "fakes": ["examples"]
         }
       }
