@@ -228,7 +228,7 @@ jobs:
           lfs: false
 
       - name: "Run hadolint"
-        uses: hadolint/hadolint-action@v3.1.0
+        uses: hadolint/hadolint-action@v3.3.0
         with:
           dockerfile: ci/Dockerfile
           failure-threshold: error
