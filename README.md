@@ -20,7 +20,8 @@ The whole quality gate (format, lint, type-aware lint, typecheck, build, tests, 
    `init:template` renames the package and CLI binary and rewrites the title and intro of this README and `AGENTS.md`. Use `--bin <name>` for a different binary name and `--dry-run` to preview.
 
 4. Pick your license: update `LICENSE` and `package.json#license` together.
-5. Delete what you don't need. `examples/`, unused utilities in `src/utils/`, and their tests and fakes can go; `bun run dead-code:ts` (knip) tells you what's left dangling.
+5. Create the labels Dependabot applies: `bash scripts/sync_dependabot_labels.sh` (needs an authenticated `gh`). Dependabot drops labels that don't exist in the repo.
+6. Delete what you don't need. `examples/`, unused utilities in `src/utils/`, and their tests and fakes can go; `bun run dead-code:ts` (knip) tells you what's left dangling.
 
 ## Toolchain
 

@@ -108,6 +108,8 @@ Validation scripts return non-zero on failure and are safe to chain in CI.
 ## Standalone validators
 
 - `validate_dependabot.sh` — validates `.github/dependabot.yml` parses as YAML
+- `sync_dependabot_labels.sh` — creates the labels `dependabot.yml` references
+  if the GitHub repo lacks them (`--check` only reports; requires `gh`, `bun`)
 
 ## Release helpers
 
