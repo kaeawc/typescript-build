@@ -1,7 +1,9 @@
 #!/usr/bin/env bun
 import { existsSync, readFileSync } from "node:fs";
+import { checkLicenseConsistency } from "./license-check";
 
 interface PackageJson {
+  license?: string;
   packageManager?: string;
   scripts?: Record<string, string>;
   dependencies?: Record<string, string>;
@@ -71,6 +73,14 @@ for (const [, imageVersion] of dockerfile.matchAll(/^FROM oven\/bun:([0-9][^\s-]
   if (bunVersion && imageVersion !== bunVersion) {
     fail(`Bun version mismatch: packageManager uses ${bunVersion}, ci/Dockerfile uses oven/bun:${imageVersion}`);
   }
+}
+
+const licenseFailure = checkLicenseConsistency(
+  existsSync("LICENSE") ? readFileSync("LICENSE", "utf8") : undefined,
+  packageJson.license,
+);
+if (licenseFailure) {
+  fail(licenseFailure);
 }
 
 const readme = readFileSync("README.md", "utf8");
