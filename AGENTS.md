@@ -326,7 +326,11 @@ in order:
 A multi-stage Bun Dockerfile lives at `ci/Dockerfile`, patterned on
 [`golang-build`](https://github.com/kaeawc/golang-build)'s layout. Lint it with
 `bash scripts/hadolint/validate_hadolint.sh`. Build locally with
-`docker build -f ci/Dockerfile .` or `docker compose build api`.
+`docker build -f ci/Dockerfile .` or `docker compose build api`. Smoke-test the
+image with `bash ci/smoke_test.sh <image>` (`--help`, `GET /health`, MCP
+`initialize`, and the bundled MCP App view); CI builds and smoke-tests it
+whenever `ci/**`, `src/**`, `package.json`, `bun.lock`, `build.ts`,
+`bunfig.toml`, `tsconfig.json` or `.dockerignore` change.
 
 ## What this template deliberately omits
 
