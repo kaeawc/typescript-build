@@ -24,6 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       docs_only: ${{ steps.filter.outputs.docs_only }}
+      docker: ${{ steps.filter.outputs.docker }}
     steps:
       - name: "Git Checkout"
         uses: actions/checkout@v7
@@ -35,11 +36,19 @@ jobs:
         uses: actions/github-script@v9
         with:
           script: |
+            // Non-PR events (e.g. pushes to main) always run everything.
+            if (context.eventName !== 'pull_request') {
+              core.setOutput('docs_only', 'false');
+              core.setOutput('docker', 'true');
+              return;
+            }
+
             const prNumber = context.issue.number;
-            const { data: files } = await github.rest.pulls.listFiles({
+            const files = await github.paginate(github.rest.pulls.listFiles, {
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: prNumber,
+              per_page: 100,
             });
 
             const docPatterns = [
@@ -54,6 +63,23 @@ jobs:
             console.log('All files are docs:', allFilesAreDocs);
 
             core.setOutput('docs_only', allFilesAreDocs.toString());
+
+            // Inputs to the Docker image (see ci/Dockerfile and .dockerignore),
+            // plus this workflow so changes to the docker-build job run it.
+            const dockerPatterns = [
+              /^ci\//,
+              /^src\//,
+              /^package\.json$/,
+              /^bun\.lock$/,
+              /^bunfig\.toml$/,
+              /^build\.ts$/,
+              /^tsconfig\.json$/,
+              /^\.dockerignore$/,
+              /^\.github\/workflows\/pull_request\.yml$/,
+            ];
+            const dockerChanged = files.some(f => dockerPatterns.some(p => p.test(f.filename)));
+            console.log('Docker inputs changed:', dockerChanged);
+            core.setOutput('docker', dockerChanged.toString());
 
   # =============================================================================
   # Turbo-cached lint / build / test across OS matrix
@@ -218,6 +244,37 @@ jobs:
         with:
           dockerfile: ci/Dockerfile
           failure-threshold: error
+
+  # =============================================================================
+  # Docker image build + smoke run (only when image inputs change)
+  # =============================================================================
+  docker-build:
+    name: "Docker Build + Smoke Test"
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.docker == 'true'
+    timeout-minutes: 15
+    steps:
+      - name: "Git Checkout"
+        uses: actions/checkout@v7
+        with:
+          lfs: false
+
+      - name: "Set up Docker Buildx"
+        uses: docker/setup-buildx-action@v4
+
+      - name: "Build image"
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: ci/Dockerfile
+          load: true
+          tags: typescript-build:ci
+          cache-from: type=gha,scope=docker-ci
+          cache-to: type=gha,mode=max,scope=docker-ci
+
+      - name: "Smoke test image"
+        run: bash ci/smoke_test.sh typescript-build:ci
 
   # =============================================================================
   # Dependabot config validation
