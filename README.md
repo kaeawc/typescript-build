@@ -54,7 +54,7 @@ The rationale and trade-offs are in [ADR-0007](docs/adr/0007-oxc-and-typescript-
 
 ```bash
 bun run watch            # run src/index.ts with --watch
-bun test                 # bun:test (unit tests run in <100 ms each)
+bun run test             # bun:test in parallel workers (unit tests run in <100 ms each)
 bun run lint             # oxlint (bun run lint:fix to auto-fix)
 bun run lint:types       # oxlint --type-aware (tsgolint)
 bun run format           # oxfmt (format:check in CI)

@@ -4,7 +4,7 @@
   "private": true,
   "description": "Bun + Turbo + TypeScript template with the validation and guardrails from auto-mobile",
   "scripts": {
-    "test": "bun test",
+    "test": "bun test --parallel",
     "test:coverage": "bun test --coverage",
     "test:timing": "bun scripts/check-test-timing.ts",
     "typecheck": "tsc && tsc -p tsconfig.view.json",
