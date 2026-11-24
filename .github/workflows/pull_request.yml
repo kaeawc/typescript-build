@@ -109,6 +109,29 @@ jobs:
           retention-days: 7
 
   # =============================================================================
+  # Test-suite time budget (own job: turbo-validate runs tasks in parallel,
+  # which would skew wall-clock timing)
+  # =============================================================================
+  test-timing:
+    name: "Test Timing Budget"
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.docs_only != 'true'
+    timeout-minutes: 10
+    steps:
+      - name: "Git Checkout"
+        uses: actions/checkout@v7
+        with:
+          lfs: false
+
+      - uses: ./.github/actions/setup-bun-turbo
+
+      # Fastest of 3 runs filters out runner noise; the margin gives shared
+      # runners headroom over the 2 s budget developers hold locally.
+      - name: "Check test-suite runtime"
+        run: bun run test:timing -- --runs=3 --margin=1.25
+
+  # =============================================================================
   # TypeScript code coverage
   # =============================================================================
   ts-code-coverage:

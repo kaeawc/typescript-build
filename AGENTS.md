@@ -215,8 +215,11 @@ Inject them through constructors or function parameters; do not reach for global
   that compose the template's building blocks. Agents copy patterns from
   these rather than re-inventing them.
 - **Test timing budget** — `bun run test:timing` asserts that the total
-  test-suite runtime is under 2 seconds. Keeps the "tests run on every save"
-  guarantee from eroding as the suite grows.
+  test-suite runtime (`bun run test`, which runs files in parallel workers
+  with `bun test --parallel`) is under 2 seconds, and prints the slowest
+  files. CI runs it as the `Test Timing Budget` job (fastest of 3 runs, with
+  a margin for runner noise). Keeps the "tests run on every save" guarantee
+  from eroding as the suite grows.
 - **CLI startup benchmark** — `bun run benchmark-cli-startup` builds and
   times `./dist/src/index.js --help` to catch startup-time regressions.
 - **Commitlint** — `commit-msg` hook enforces Conventional Commits via
@@ -247,7 +250,8 @@ bun run coverage:check
 bun run package:quality
 bun run validate:template
 bun run benchmark:perf
-bun test
+bun run test                    # All files, parallel workers (isolated per file)
+bun test                        # All files, one process, in sequence
 bun test --bail                 # Stop on first failure
 bun test test/index.test.ts     # Single file
 ```
