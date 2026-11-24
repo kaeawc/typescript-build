@@ -163,7 +163,7 @@ Other editors: oxlint and oxfmt both ship an LSP (`oxlint --lsp`, `oxfmt --lsp`)
 
 ## CI
 
-`.github/workflows/pull_request.yml` installs Bun from `package.json#packageManager`. It caches the Bun install cache and `.turbo`, then runs format, lint, type-aware lint, typecheck, build, and tests in **one** parallel `turbo run` on Ubuntu and macOS. Separate jobs cover coverage, package quality, template health, performance budgets, dead code, shellcheck, hadolint, a Docker build plus smoke test (`ci/smoke_test.sh`, only when image inputs change), and Dependabot config. Dependabot batches dependency updates into groups (the oxc tools always move together).
+`.github/workflows/pull_request.yml` (the `CI` workflow) runs on every pull request and on every push to `main`, so merges are validated too. The `main` runs also save the caches that pull requests restore from their base branch. It installs Bun from `package.json#packageManager`. It caches the Bun install cache and `.turbo` (keyed per job), then runs format, lint, type-aware lint, typecheck, build, and tests in **one** parallel `turbo run` on Ubuntu and macOS. Separate jobs cover coverage, package quality, template health, performance budgets, dead code, shellcheck, hadolint, a Docker build plus smoke test (`ci/smoke_test.sh`, only when image inputs change), and Dependabot config. Dependabot batches dependency updates into groups (the oxc tools always move together).
 
 ## Troubleshooting
 

@@ -28,14 +28,17 @@ runs:
         restore-keys: |
           bun-${{ runner.os }}-
 
+    # Keyed per job: cache entries are immutable, so with a shared key the first
+    # job to finish (often one that never runs turbo) would claim the SHA's
+    # entry and later PRs would restore an empty .turbo.
     - name: "Cache Turborepo"
       uses: actions/cache@v6
       with:
         path: .turbo
-        key: turbo-${{ runner.os }}-${{ hashFiles('bun.lock') }}-${{ github.sha }}
+        key: turbo-${{ runner.os }}-${{ github.job }}-${{ hashFiles('bun.lock') }}-${{ github.sha }}
         restore-keys: |
-          turbo-${{ runner.os }}-${{ hashFiles('bun.lock') }}-
-          turbo-${{ runner.os }}-
+          turbo-${{ runner.os }}-${{ github.job }}-${{ hashFiles('bun.lock') }}-
+          turbo-${{ runner.os }}-${{ github.job }}-
 
     - name: "Install dependencies"
       shell: ${{ inputs.shell }}
